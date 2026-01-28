@@ -67,5 +67,53 @@
   },
   "RESURRECTION_PLAN.md": {
     "RESURRECTION_PLAN.html": "4631afb5"
+  },
+  "posts/23_12_22_XGB_EnergyConsumption_ARCHIVED/index.ipynb": {
+    "index.html": "23007105"
+  },
+  "posts/24_01_16_LogisticRegression/index.ipynb": {
+    "index.html": "619acd0f"
+  },
+  "posts/24_01_23_SentimentAnalysis_ARCHIVED/index.ipynb": {
+    "index.html": "58c1c29f"
+  },
+  "posts/23_11_23_SpaceshipTitanic/index.ipynb": {
+    "index.html": "032fcede"
+  },
+  "posts/24_03_16_EH1/index.ipynb": {
+    "index.html": "9035510e"
+  },
+  "posts/24_03_17_EH2/index.ipynb": {
+    "index.html": "0455bffb"
+  },
+  "posts/24_03_19_Optuna/index.ipynb": {
+    "index.html": "0ba336d6"
+  },
+  "posts/24_03_31_EH3/index.ipynb": {
+    "index.html": "4d91f1aa"
+  },
+  "posts/24_04_02_EH4/index.ipynb": {
+    "index.html": "eb20c24a"
+  },
+  "posts/24_04_08_EH5/index.ipynb": {
+    "index.html": "d7e74942"
+  },
+  "posts/24_04_14_VaEs/index.ipynb": {
+    "index.html": "ed48b2f6"
+  },
+  "posts/24_04_22_DNNs_BGD_Adam/index.ipynb": {
+    "index.html": "cd492e6f"
+  },
+  "posts/24_04_28_CNNsTF/index.ipynb": {
+    "index.html": "24687159"
+  },
+  "posts/24_04_30_GANs/index.ipynb": {
+    "index.html": "a8a94c96"
+  },
+  "posts/24_05_09_Tuition/index.ipynb": {
+    "index.html": "357af9cf"
+  },
+  "posts/26_01_28_Announcement/index.qmd": {
+    "index.html": "6b804565"
   }
 }

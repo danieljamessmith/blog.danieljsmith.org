@@ -9,7 +9,7 @@ $link-color: #b45309;
 $body-bg: #fffbf5;
 $body-color: #1f2937;
 
-// Navbar
+// Navbar - base color (gradient applied in rules)
 $navbar-bg: #f59e0b;
 $navbar-fg: #ffffff;
 
@@ -18,17 +18,28 @@ $link-hover-color: #d97706;
 
 /*-- scss:rules --*/
 
-// Amber accent for various elements
+// Scale down the entire page (~80% zoom effect)
+html {
+  font-size: 14px; // Default is 16px, this gives ~87.5% scale
+}
+
+// Gradient navbar matching tuition site style
+.navbar {
+  background: linear-gradient(to right, #d97706, #f59e0b, #fbbf24) !important;
+}
+
+// Navbar link hover
 .nav-link:hover {
-  color: #d97706 !important;
+  color: rgba(255, 255, 255, 0.8) !important;
 }
 
 .navbar-brand {
   font-weight: 600;
 }
 
-// Category badges
-.quarto-category {
+// Category badges - orange everywhere
+.quarto-category,
+.listing-category {
   background-color: #fef3c7 !important;
   color: #92400e !important;
   border: 1px solid #f59e0b !important;

@@ -48,6 +48,7 @@ desktop.ini
 *.swp
 *.swo
 *~
+.vscode/
 
 # Temporary files
 *.tmp
