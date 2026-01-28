@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.450">
+<meta name="generator" content="quarto-1.8.27">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -10,7 +10,7 @@
 <meta name="dcterms.date" content="2024-04-08">
 <meta name="description" content="Learn how to read ONS lookup tables into Pandas to convert postcodes into local demographic statistics, such as population density and Index of Multiple Deprivation (IMD) score. Learn how to use KNNImputer from scikit-learn to fill missing values. See how these statistics correlate with donation history for a dataset of charity donors.">
 
-<title>Blog - Joining Demographic Statistics onto a Dataset of Charity Donors with Python</title>
+<title>Joining Demographic Statistics onto a Dataset of Charity Donors with Python – Blog</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -24,6 +24,7 @@ ul.task-list li input[type="checkbox"] {
   vertical-align: middle;
 }
 /* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
@@ -60,24 +61,28 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 
 
-<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="../../site_libs/quarto-nav/headroom.min.js"></script>
 <script src="../../site_libs/clipboard/clipboard.min.js"></script>
 <script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
 <script src="../../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../../">
-<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="../../site_libs/quarto-html/popper.min.js"></script>
 <script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-2a367172f4fe7d9182ebf8e09f85cb4e.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-7fb59815a1c41eec7c034637f0c35ff0.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-2a367172f4fe7d9182ebf8e09f85cb4e.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../../site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-564a2eb0c4cfcf63133849ca96fde483.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-4bab426e5654be36d466f7263c24117f.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-564a2eb0c4cfcf63133849ca96fde483.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <link href="../../site_libs/quarto-contrib/downloadthis-1.9.1/downloadthis.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
@@ -85,7 +90,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   "collapse-after": 3,
   "panel-placement": "end",
   "type": "overlay",
-  "limit": 20,
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
   "language": {
     "search-no-results-text": "No results",
     "search-matching-documents-text": "matching documents",
@@ -94,54 +105,217 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-more-match-text": "more match in this document",
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
     "search-detached-cancel-button-title": "Cancel",
     "search-submit-button-title": "Submit",
     "search-label": "Search"
   }
 }</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
 <script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
 
 <link rel="stylesheet" href="../../styles.css">
 </head>
 
-<body class="nav-fixed">
+<body class="nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
-    <nav class="navbar navbar-expand-lg navbar-dark ">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
-      <div class="navbar-brand-container">
+      <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="../../index.html">
     <span class="navbar-title">Blog</span>
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
   <span class="navbar-toggler-icon"></span>
 </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
-    <a class="nav-link" href="https://www.linkedin.com/in/danieljames-smith/" rel="" target=""><i class="bi bi-LinkedIn" role="img">
+    <a class="nav-link" href="https://www.linkedin.com/in/danieljames-smith/"> <i class="bi bi-LinkedIn" role="img">
 </i> 
- <span class="menu-text">LinkedIn</span></a>
+<span class="menu-text">LinkedIn</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="https://github.com/danieljamessmith/blog" rel="" target="">
- <span class="menu-text">GitHub Repo</span></a>
+    <a class="nav-link" href="https://github.com/danieljamessmith/blog"> 
+<span class="menu-text">GitHub Repo</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../../about.html" rel="" target="">
- <span class="menu-text">About</span></a>
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">About</span></a>
   </li>  
 </ul>
+          </div> <!-- /navcollapse -->
             <div class="quarto-navbar-tools">
   <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
 </div>
-          </div> <!-- /navcollapse -->
       </div> <!-- /container-fluid -->
     </nav>
 </header>
@@ -191,6 +365,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
+
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
 <h1 class="title">Joining Demographic Statistics onto a Dataset of Charity Donors with Python</h1>
@@ -230,16 +405,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </div>
   
 
+
 </header>
 
-<div class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+
+<div id="71661f38-4607-4b35-a240-c6e78629fa4b" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> folium</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> branca.colormap <span class="im">import</span> LinearColormap</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.impute <span class="im">import</span> KNNImputer</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.impute <span class="im">import</span> KNNImputer</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <blockquote class="blockquote">
 <ul>
@@ -248,7 +425,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><p>This post follows some of my voluntary data analysis when studying a real dataset of donors to <a href="https://www.emmanuelhouse.org.uk/">Emmanuel House</a> in Nottingham.</p></li>
 </ul>
 </blockquote>
-<p><a href="#dnldts7296" onclick="fetch('data:text/csv;base64,UG9zdGNvZGUsTnVtYmVyRG9uYXRpb25zLFRvdGFsRG9uYXRlZCxBdmVyYWdlRG9uYXRlZCxOZXdzbGV0dGVyDQpORzkgM1dGLDQsNjEsMTUuMjUsMQ0KTkc5IDRXUCwxLDIzLDIzLjAsMA0KTkc5IDNFTCwxLDMwLDMwLjAsMA0KTkcxIDlGSCw1LDc1LDE1LjAsMQ0KTkc1IDZRWiwxLDE1LDE1LjAsMA0KTkc3IDVRTCwyLDMxLDE1LjUsMA0KTkc3IDJGVCwxLDE1LDE1LjAsMA0KTkc0IDFQWSwyLDMxLDE1LjUsMA0KTkc4IDNTTCwxLDE4LDE4LjAsMA0KTkc5IDRBWCw1LDc1LDE1LjAsMQ0KTkc1IDFQUywxLDE1LDE1LjAsMA0KTkcxMyA4WFMsMiwzOSwxOS41LDANCk5HMSAzUkQsMTQsMjEzLDE1LjIxLDENCk5HOCAyRlUsNCw2MiwxNS41LDENCk5HMyA3R04sMiwzMCwxNS4wLDANCk5HMSAxTlIsMSwxNSwxNS4wLDANCk5HMSAzTkUsMSwxNSwxNS4wLDANCk5HNyAyR1EsMyw0NSwxNS4wLDENCk5HOCAzREIsNCw2MCwxNS4wLDENCk5HNSA1R0QsMSwxOCwxOC4wLDANCk5HOSAzSEcsNSw4NCwxNi44LDENCk5HOSAyVUIsMiwzMCwxNS4wLDANCk5HMiA1SE4sNywxMDUsMTUuMCwxDQpORzMgMUxFLDEsMjcsMjcuMCwwDQpORzIgM0RXLDEsMTYsMTYuMCwwDQpORzIgN1JZLDIxLDMxNSwxNS4wLDENCk5HMyAzRU4sMSwzOCwzOC4wLDANCk5HMyA0SkwsMTIsNTcwLDQ3LjUsMQ0KTkc1IDJFVCw3LDEwOSwxNS41NywxDQpORzUgOVdBLDMsNDUsMTUuMCwxDQpORzIgNlBQLDIsMzAsMTUuMCwwDQpORzUgMUJXLDEyLDE4OCwxNS42NywxDQpORzkgMVBSLDksMTM3LDE1LjIyLDENCk5HNCAxSlksMiwzMCwxNS4wLDANCk5HMSAxTEYsMyw0NiwxNS4zMywxDQpORzEgMU5OLDcsMzEzLDQ0LjcxLDENCk5HNiAwR0EsMiwzMCwxNS4wLDANCk5HOCAzREosNCw2MCwxNS4wLDENCk5HMSA1QlQsMjAsMzAwLDE1LjAsMQ0KTkc4IDlRTiw5LDEzOCwxNS4zMywxDQpORzcgMkxGLDEsMTUsMTUuMCwwDQpORzUgME5ULDIsMzEsMTUuNSwwDQpORzMgMkVVLDIsMzAsMTUuMCwwDQpORzMgNk5ZLDEsMTcsMTcuMCwwDQpORzcgNEdSLDEsMTUsMTUuMCwwDQpORzIgNVhTLDIsNjEsMzAuNSwxDQpORzIgNVhaLDMsNDUsMTUuMCwxDQpORzMgNUhSLDQsNjAsMTUuMCwxDQpORzIgNEdXLDEsMTUsMTUuMCwwDQpORzkgMVBZLDEsNDQsNDQuMCwwDQpORzEyIDJBVCwzLDUxLDE3LjAsMQ0KTkczIDdGRSwyLDMwLDE1LjAsMA0KTkcyIDZRQiw5LDEzNiwxNS4xMSwxDQpORzcgMVJBLDQsNjMsMTUuNzUsMQ0KTkc1IDNGRCw2LDkyLDE1LjMzLDENCk5HNyAzTFQsMSwxNSwxNS4wLDANCk5HNiA2RUcsMSwxMzYsMTM2LjAsMQ0KTkc0IDFQRCwyLDMwLDE1LjAsMA0KTkc2IDhQSiwyLDMyLDE2LjAsMA0KTkcxMSA3QVgsMSw1MzksNTM5LjAsMQ0KTkc4IDZEUSwzLDQ1LDE1LjAsMQ0KTkcxIDFFUSw5LDEzNSwxNS4wLDENCk5HNiA5TEUsMSwxNiwxNi4wLDANCk5HOSAySkIsNiw5OSwxNi41LDENCk5HOCAzSFQsOSwxNDMsMTUuODksMQ0KTkc3IDFQWSw5LDEzNSwxNS4wLDENCk5HMTEgN0VTLDIsMzAsMTUuMCwwDQpORzMgNVNILDUsNzUsMTUuMCwxDQpORzEgNERCLDIsMzAsMTUuMCwwDQpORzggNUxXLDIsNTYsMjguMCwxDQpORzIgMVFILDEsMTUsMTUuMCwwDQpORzEgOUVaLDQsMzg4LDk3LjAsMQ0KTkcyIDdETCwxLDE2LDE2LjAsMA0KTkc1IDNIVywyLDMwLDE1LjAsMA0KTkcxIDNKUCw4LDE2NjE4LDIwNzcuMjUsMQ0KTkcxIDFEVSwxNCwyMjUsMTYuMDcsMQ0KTkcxIDlHRSwyLDMwLDE1LjAsMA0KTkc3IDZIQiwyLDM0LDE3LjAsMA0KTkc1IDFKRywxLDI4LDI4LjAsMA0KTkc3IDNQQiwxLDY4LDY4LjAsMQ0KTkcxIDZXWSwzNyw1NTgsMTUuMDgsMQ0KTkcxIDFFTiwyLDMwLDE1LjAsMA0KTkcyIDRERywxMCwxNTAsMTUuMCwxDQpORzIgOUpZLDEsNTgsNTguMCwwDQpORzcgMUpRLDMsNDUsMTUuMCwxDQpORzcgNVFYLDMsNTAsMTYuNjcsMQ0KTkczIDZHWSw2LDkxLDE1LjE3LDENCk5HOCA1V0UsMSwxNiwxNi4wLDANCk5HNyA3REIsMiwzMCwxNS4wLDANCk5HOCAzRU4sMiw5Miw0Ni4wLDENCk5HOSAyWlosMiwzMSwxNS41LDANCk5HNiA5RUosMyw1MSwxNy4wLDENCk5HNyAxRlAsMiwzMCwxNS4wLDANCk5HMSAxUVEsMSwxNSwxNS4wLDANCk5HOCAyUk4sMSwyMSwyMS4wLDANCk5HMiAxV1ksMSwxNSwxNS4wLDANCk5HOCAxTkQsMTAsMTY5LDE2LjksMQ0KTkc5IDJRQSwxLDE1LDE1LjAsMA0KTkczIDFGRiwyMiwzMzMsMTUuMTQsMQ0KTkc3IDFVQiwzLDQ1LDE1LjAsMQ0K').then(res => res.blob()).then(blob => {
+<p><a href="#dnldts59080" onclick="fetch('data:text/csv;base64,UG9zdGNvZGUsTnVtYmVyRG9uYXRpb25zLFRvdGFsRG9uYXRlZCxBdmVyYWdlRG9uYXRlZCxOZXdzbGV0dGVyDQpORzkgM1dGLDQsNjEsMTUuMjUsMQ0KTkc5IDRXUCwxLDIzLDIzLjAsMA0KTkc5IDNFTCwxLDMwLDMwLjAsMA0KTkcxIDlGSCw1LDc1LDE1LjAsMQ0KTkc1IDZRWiwxLDE1LDE1LjAsMA0KTkc3IDVRTCwyLDMxLDE1LjUsMA0KTkc3IDJGVCwxLDE1LDE1LjAsMA0KTkc0IDFQWSwyLDMxLDE1LjUsMA0KTkc4IDNTTCwxLDE4LDE4LjAsMA0KTkc5IDRBWCw1LDc1LDE1LjAsMQ0KTkc1IDFQUywxLDE1LDE1LjAsMA0KTkcxMyA4WFMsMiwzOSwxOS41LDANCk5HMSAzUkQsMTQsMjEzLDE1LjIxLDENCk5HOCAyRlUsNCw2MiwxNS41LDENCk5HMyA3R04sMiwzMCwxNS4wLDANCk5HMSAxTlIsMSwxNSwxNS4wLDANCk5HMSAzTkUsMSwxNSwxNS4wLDANCk5HNyAyR1EsMyw0NSwxNS4wLDENCk5HOCAzREIsNCw2MCwxNS4wLDENCk5HNSA1R0QsMSwxOCwxOC4wLDANCk5HOSAzSEcsNSw4NCwxNi44LDENCk5HOSAyVUIsMiwzMCwxNS4wLDANCk5HMiA1SE4sNywxMDUsMTUuMCwxDQpORzMgMUxFLDEsMjcsMjcuMCwwDQpORzIgM0RXLDEsMTYsMTYuMCwwDQpORzIgN1JZLDIxLDMxNSwxNS4wLDENCk5HMyAzRU4sMSwzOCwzOC4wLDANCk5HMyA0SkwsMTIsNTcwLDQ3LjUsMQ0KTkc1IDJFVCw3LDEwOSwxNS41NywxDQpORzUgOVdBLDMsNDUsMTUuMCwxDQpORzIgNlBQLDIsMzAsMTUuMCwwDQpORzUgMUJXLDEyLDE4OCwxNS42NywxDQpORzkgMVBSLDksMTM3LDE1LjIyLDENCk5HNCAxSlksMiwzMCwxNS4wLDANCk5HMSAxTEYsMyw0NiwxNS4zMywxDQpORzEgMU5OLDcsMzEzLDQ0LjcxLDENCk5HNiAwR0EsMiwzMCwxNS4wLDANCk5HOCAzREosNCw2MCwxNS4wLDENCk5HMSA1QlQsMjAsMzAwLDE1LjAsMQ0KTkc4IDlRTiw5LDEzOCwxNS4zMywxDQpORzcgMkxGLDEsMTUsMTUuMCwwDQpORzUgME5ULDIsMzEsMTUuNSwwDQpORzMgMkVVLDIsMzAsMTUuMCwwDQpORzMgNk5ZLDEsMTcsMTcuMCwwDQpORzcgNEdSLDEsMTUsMTUuMCwwDQpORzIgNVhTLDIsNjEsMzAuNSwxDQpORzIgNVhaLDMsNDUsMTUuMCwxDQpORzMgNUhSLDQsNjAsMTUuMCwxDQpORzIgNEdXLDEsMTUsMTUuMCwwDQpORzkgMVBZLDEsNDQsNDQuMCwwDQpORzEyIDJBVCwzLDUxLDE3LjAsMQ0KTkczIDdGRSwyLDMwLDE1LjAsMA0KTkcyIDZRQiw5LDEzNiwxNS4xMSwxDQpORzcgMVJBLDQsNjMsMTUuNzUsMQ0KTkc1IDNGRCw2LDkyLDE1LjMzLDENCk5HNyAzTFQsMSwxNSwxNS4wLDANCk5HNiA2RUcsMSwxMzYsMTM2LjAsMQ0KTkc0IDFQRCwyLDMwLDE1LjAsMA0KTkc2IDhQSiwyLDMyLDE2LjAsMA0KTkcxMSA3QVgsMSw1MzksNTM5LjAsMQ0KTkc4IDZEUSwzLDQ1LDE1LjAsMQ0KTkcxIDFFUSw5LDEzNSwxNS4wLDENCk5HNiA5TEUsMSwxNiwxNi4wLDANCk5HOSAySkIsNiw5OSwxNi41LDENCk5HOCAzSFQsOSwxNDMsMTUuODksMQ0KTkc3IDFQWSw5LDEzNSwxNS4wLDENCk5HMTEgN0VTLDIsMzAsMTUuMCwwDQpORzMgNVNILDUsNzUsMTUuMCwxDQpORzEgNERCLDIsMzAsMTUuMCwwDQpORzggNUxXLDIsNTYsMjguMCwxDQpORzIgMVFILDEsMTUsMTUuMCwwDQpORzEgOUVaLDQsMzg4LDk3LjAsMQ0KTkcyIDdETCwxLDE2LDE2LjAsMA0KTkc1IDNIVywyLDMwLDE1LjAsMA0KTkcxIDNKUCw4LDE2NjE4LDIwNzcuMjUsMQ0KTkcxIDFEVSwxNCwyMjUsMTYuMDcsMQ0KTkcxIDlHRSwyLDMwLDE1LjAsMA0KTkc3IDZIQiwyLDM0LDE3LjAsMA0KTkc1IDFKRywxLDI4LDI4LjAsMA0KTkc3IDNQQiwxLDY4LDY4LjAsMQ0KTkcxIDZXWSwzNyw1NTgsMTUuMDgsMQ0KTkcxIDFFTiwyLDMwLDE1LjAsMA0KTkcyIDRERywxMCwxNTAsMTUuMCwxDQpORzIgOUpZLDEsNTgsNTguMCwwDQpORzcgMUpRLDMsNDUsMTUuMCwxDQpORzcgNVFYLDMsNTAsMTYuNjcsMQ0KTkczIDZHWSw2LDkxLDE1LjE3LDENCk5HOCA1V0UsMSwxNiwxNi4wLDANCk5HNyA3REIsMiwzMCwxNS4wLDANCk5HOCAzRU4sMiw5Miw0Ni4wLDENCk5HOSAyWlosMiwzMSwxNS41LDANCk5HNiA5RUosMyw1MSwxNy4wLDENCk5HNyAxRlAsMiwzMCwxNS4wLDANCk5HMSAxUVEsMSwxNSwxNS4wLDANCk5HOCAyUk4sMSwyMSwyMS4wLDANCk5HMiAxV1ksMSwxNSwxNS4wLDANCk5HOCAxTkQsMTAsMTY5LDE2LjksMQ0KTkc5IDJRQSwxLDE1LDE1LjAsMA0KTkczIDFGRiwyMiwzMzMsMTUuMTQsMQ0KTkc3IDFVQiwzLDQ1LDE1LjAsMQ0K').then(res => res.blob()).then(blob => {
       const downloadURL = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       document.body.appendChild(a);
@@ -256,17 +433,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       a.download = 'FakeIndividualConstituents.csv'; a.click();
       window.URL.revokeObjectURL(downloadURL);
       document.body.removeChild(a);
-        });"><button class="btn btn-info downloadthis  " id="dnldts7296"><i class="bi bi-database-fill-down"></i> Download FakeIndividualConstituents.csv </button></a></p>
-<div class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(<span class="st">'files/FakeIndividualConstituents.csv'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+        });"><button class="btn btn-info downloadthis  " id="dnldts59080"><i class="bi bi-database-fill-down"></i> Download `FakeIndividualConstituents.csv` </button></a></p>
+<div id="01e1f26f-0848-4fae-805a-4a9a8715408f" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(<span class="st">'files/FakeIndividualConstituents.csv'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div class="cell" data-scrolled="true" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>df.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="1b7f8c03-4317-4a55-a080-851cb714b41e" class="cell" data-scrolled="true" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>df.head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="3">
 <div>
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
@@ -279,7 +456,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </thead>
 <tbody>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
+<th data-quarto-table-cell-role="th">0</th>
 <td>NG9 3WF</td>
 <td>4</td>
 <td>61</td>
@@ -287,7 +464,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>1</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
+<th data-quarto-table-cell-role="th">1</th>
 <td>NG9 4WP</td>
 <td>1</td>
 <td>23</td>
@@ -295,7 +472,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>0</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
+<th data-quarto-table-cell-role="th">2</th>
 <td>NG9 3EL</td>
 <td>1</td>
 <td>30</td>
@@ -303,7 +480,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>0</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
+<th data-quarto-table-cell-role="th">3</th>
 <td>NG1 9FH</td>
 <td>5</td>
 <td>75</td>
@@ -311,7 +488,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>1</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">4</td>
+<th data-quarto-table-cell-role="th">4</th>
 <td>NG5 6QZ</td>
 <td>1</td>
 <td>15</td>
@@ -324,13 +501,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>df.describe()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="aa16e32c-ce5a-41ba-98d7-996a6257b7ba" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>df.describe()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="4">
 <div>
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
@@ -342,56 +519,56 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </thead>
 <tbody>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">count</td>
+<th data-quarto-table-cell-role="th">count</th>
 <td>100.000000</td>
 <td>100.000000</td>
 <td>100.00000</td>
 <td>100.000000</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">mean</td>
+<th data-quarto-table-cell-role="th">mean</th>
 <td>4.320000</td>
 <td>250.150000</td>
 <td>46.51950</td>
 <td>0.500000</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">std</td>
+<th data-quarto-table-cell-role="th">std</th>
 <td>5.454828</td>
 <td>1657.135245</td>
 <td>212.23961</td>
 <td>0.502519</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">min</td>
+<th data-quarto-table-cell-role="th">min</th>
 <td>1.000000</td>
 <td>15.000000</td>
 <td>15.00000</td>
 <td>0.000000</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">25%</td>
+<th data-quarto-table-cell-role="th">25%</th>
 <td>1.000000</td>
 <td>30.000000</td>
 <td>15.00000</td>
 <td>0.000000</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">50%</td>
+<th data-quarto-table-cell-role="th">50%</th>
 <td>2.000000</td>
 <td>45.000000</td>
 <td>15.19000</td>
 <td>0.500000</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">75%</td>
+<th data-quarto-table-cell-role="th">75%</th>
 <td>5.000000</td>
 <td>92.000000</td>
 <td>16.92500</td>
 <td>1.000000</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">max</td>
+<th data-quarto-table-cell-role="th">max</th>
 <td>37.000000</td>
 <td>16618.000000</td>
 <td>2077.25000</td>
@@ -410,22 +587,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><a href="https://www.data.gov.uk/dataset/091feb1c-aea6-45c9-82bf-768a15c65307/open-postcode-geo">https://www.data.gov.uk/…</a></p>
 </blockquote>
 <p>See previous blog posts <a href="https://danieljamessmith.github.io/blog/posts/eh1/">(1)</a> <a href="https://danieljamessmith.github.io/blog/posts/eh2/">(2)</a> for the details of this geocoding process.</p>
-<div class="cell" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>post <span class="op">=</span> pd.read_csv(<span class="st">'LOOKUP_GEO/open_postcode_geo.csv'</span>, header<span class="op">=</span><span class="va">None</span>, index_col<span class="op">=</span><span class="dv">0</span>)[[<span class="dv">7</span>, <span class="dv">8</span>]]</span>
+<div id="7eda0fda" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>post <span class="op">=</span> pd.read_csv(<span class="st">'LOOKUP_GEO/open_postcode_geo.csv'</span>, header<span class="op">=</span><span class="va">None</span>, index_col<span class="op">=</span><span class="dv">0</span>)[[<span class="dv">7</span>, <span class="dv">8</span>]]</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>post <span class="op">=</span> post.rename(columns<span class="op">=</span>{<span class="dv">7</span>: <span class="st">'Latitude'</span>, <span class="dv">8</span>: <span class="st">'Longitude'</span>})</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>post.sample(<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>post.sample(<span class="dv">5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="5">
 <div>
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">Latitude</th>
 <th data-quarto-table-cell-role="th">Longitude</th>
 </tr>
-<tr class="odd">
+<tr class="even">
 <th data-quarto-table-cell-role="th">0</th>
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th"></th>
@@ -433,27 +610,27 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </thead>
 <tbody>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">EX19 8LW</td>
+<th data-quarto-table-cell-role="th">EX19 8LW</th>
 <td>50.916600</td>
 <td>-4.060088</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">ML1 3LD</td>
+<th data-quarto-table-cell-role="th">ML1 3LD</th>
 <td>55.793773</td>
 <td>-4.003318</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">NG17 8HS</td>
+<th data-quarto-table-cell-role="th">NG17 8HS</th>
 <td>53.112673</td>
 <td>-1.268852</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">NG10 5AU</td>
+<th data-quarto-table-cell-role="th">NG10 5AU</th>
 <td>52.923366</td>
 <td>-1.285042</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">WA1 3SS</td>
+<th data-quarto-table-cell-role="th">WA1 3SS</th>
 <td>53.399555</td>
 <td>-2.570520</td>
 </tr>
@@ -463,8 +640,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="6">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Join Latitude and Longitude onto `df` using the 'Postcode' column</span></span>
+<div id="bd997e48-39ce-4fc3-b3f8-b9208eb57906" class="cell" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Join Latitude and Longitude onto `df` using the 'Postcode' column</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.merge(df, post, left_on<span class="op">=</span><span class="st">'Postcode'</span>, right_index<span class="op">=</span><span class="va">True</span>, how<span class="op">=</span><span class="st">'left'</span>)</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Reorder the columns</span></span>
@@ -475,7 +652,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'Longitude'</span>] <span class="op">=</span> pd.to_numeric(df[<span class="st">'Longitude'</span>], errors<span class="op">=</span><span class="st">'coerce'</span>)</span>
 <span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Display number of null values in each column</span></span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>df.isna().<span class="bu">sum</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>df.isna().<span class="bu">sum</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="6">
 <pre><code>Postcode           0
 Latitude           0
@@ -487,13 +664,13 @@ Newsletter         0
 dtype: int64</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="7">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>df.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="47cbafbc-92b4-4437-a7ce-b1a499eab9f5" class="cell" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>df.head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="7">
 <div>
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
@@ -508,7 +685,7 @@ dtype: int64</code></pre>
 </thead>
 <tbody>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
+<th data-quarto-table-cell-role="th">0</th>
 <td>NG9 3WF</td>
 <td>52.930121</td>
 <td>-1.198353</td>
@@ -518,7 +695,7 @@ dtype: int64</code></pre>
 <td>1</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
+<th data-quarto-table-cell-role="th">1</th>
 <td>NG9 4WP</td>
 <td>52.921587</td>
 <td>-1.247504</td>
@@ -528,7 +705,7 @@ dtype: int64</code></pre>
 <td>0</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
+<th data-quarto-table-cell-role="th">2</th>
 <td>NG9 3EL</td>
 <td>52.938985</td>
 <td>-1.239510</td>
@@ -538,7 +715,7 @@ dtype: int64</code></pre>
 <td>0</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
+<th data-quarto-table-cell-role="th">3</th>
 <td>NG1 9FH</td>
 <td>52.955008</td>
 <td>-1.141045</td>
@@ -548,7 +725,7 @@ dtype: int64</code></pre>
 <td>1</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">4</td>
+<th data-quarto-table-cell-role="th">4</th>
 <td>NG5 6QZ</td>
 <td>52.996670</td>
 <td>-1.106307</td>
@@ -583,15 +760,15 @@ dtype: int64</code></pre>
 <blockquote class="blockquote">
 <p><a href="https://geoportal.statistics.gov.uk/datasets/ons::postcode-to-oa21-to-lsoa21-to-msoa21-to-ltla22-to-utla22-to-cauth22-nov-2023-lookup-for-the-uk/about">https://geoportal.statistics.gov.uk/…</a></p>
 </blockquote>
-<div class="cell" data-execution_count="8">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Read the lookup table and display 5 random rows</span></span>
+<div id="db3179bf" class="cell" data-execution_count="8">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Read the lookup table and display 5 random rows</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> pd.read_csv(<span class="st">'LOOKUP_GEO/PCD_OA21_LSOA21_MSOA21_LTLA22_UTLA22_CAUTH22_NOV23_UK_LU_v2.csv'</span>, low_memory<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>data.sample(<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>data.sample(<span class="dv">5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="8">
 <div>
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
@@ -618,7 +795,7 @@ dtype: int64</code></pre>
 </thead>
 <tbody>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">2411384</td>
+<th data-quarto-table-cell-role="th">2411384</th>
 <td>TN4 0JY</td>
 <td>TN4 0JY</td>
 <td>TN4 0JY</td>
@@ -640,7 +817,7 @@ dtype: int64</code></pre>
 <td>NaN</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">238683</td>
+<th data-quarto-table-cell-role="th">238683</th>
 <td>BN3 7WA</td>
 <td>BN3 7WA</td>
 <td>BN3 7WA</td>
@@ -662,7 +839,7 @@ dtype: int64</code></pre>
 <td>NaN</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">1484466</td>
+<th data-quarto-table-cell-role="th">1484466</th>
 <td>ML3 6PJ</td>
 <td>ML3 6PJ</td>
 <td>ML3 6PJ</td>
@@ -684,7 +861,7 @@ dtype: int64</code></pre>
 <td>NaN</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">2320876</td>
+<th data-quarto-table-cell-role="th">2320876</th>
 <td>SW1X8DL</td>
 <td>SW1X 8DL</td>
 <td>SW1X 8DL</td>
@@ -706,7 +883,7 @@ dtype: int64</code></pre>
 <td>NaN</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">2516422</td>
+<th data-quarto-table-cell-role="th">2516422</th>
 <td>W1J 5LF</td>
 <td>W1J 5LF</td>
 <td>W1J 5LF</td>
@@ -733,19 +910,19 @@ dtype: int64</code></pre>
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="9">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Take and rename only the relevant columns ('pcds', 'oa21cd', 'lsoa21cd') of lookup table `data`</span></span>
+<div id="1f961961-15c6-404d-9d1e-29b40e980658" class="cell" data-execution_count="9">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Take and rename only the relevant columns ('pcds', 'oa21cd', 'lsoa21cd') of lookup table `data`</span></span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> data[[<span class="st">'pcds'</span>,<span class="st">'oa21cd'</span>,<span class="st">'lsoa21cd'</span>]].rename({<span class="st">'pcds'</span>:<span class="st">'Postcode'</span>, </span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>                                                  <span class="st">'oa21cd'</span>:<span class="st">'OA21'</span>, </span>
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>                                                  <span class="st">'lsoa21cd'</span>:<span class="st">'LSOA21'</span>}, axis<span class="op">=</span><span class="dv">1</span>)</span>
 <span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Display 5 randomly chosen rows of lookup table</span></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>data.sample(<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>data.sample(<span class="dv">5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="9">
 <div>
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
@@ -756,31 +933,31 @@ dtype: int64</code></pre>
 </thead>
 <tbody>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">1217999</td>
+<th data-quarto-table-cell-role="th">1217999</th>
 <td>L37 3JL</td>
 <td>E00035430</td>
 <td>E01006990</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">2198583</td>
+<th data-quarto-table-cell-role="th">2198583</th>
 <td>SO1 3GD</td>
 <td>E00086950</td>
 <td>E01017216</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">123853</td>
+<th data-quarto-table-cell-role="th">123853</th>
 <td>BA2 5JZ</td>
 <td>E00072680</td>
 <td>E01014389</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">206780</td>
+<th data-quarto-table-cell-role="th">206780</th>
 <td>BL4 9RE</td>
 <td>E00024606</td>
 <td>E01004861</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">149180</td>
+<th data-quarto-table-cell-role="th">149180</th>
 <td>BB7 9YF</td>
 <td>E00128667</td>
 <td>E01025351</td>
@@ -791,12 +968,12 @@ dtype: int64</code></pre>
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="10">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Joining 'OA21' and 'LSOA21' from the lookup table `data` onto donors `df` using the 'Postcode' column</span></span>
+<div id="268ca091-f9fb-44c8-9b0a-145a0697bd71" class="cell" data-execution_count="10">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Joining 'OA21' and 'LSOA21' from the lookup table `data` onto donors `df` using the 'Postcode' column</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.merge(data, on<span class="op">=</span><span class="st">'Postcode'</span>, how<span class="op">=</span><span class="st">'left'</span>)</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Display number of null values in each column to see if successful</span></span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>df.isna().<span class="bu">sum</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>df.isna().<span class="bu">sum</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="10">
 <pre><code>Postcode           0
 Latitude           0
@@ -810,13 +987,13 @@ LSOA21             0
 dtype: int64</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="11">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>df.sample(<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="ac495742-f21b-4532-8cf9-31b91963829e" class="cell" data-execution_count="11">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>df.sample(<span class="dv">5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="11">
 <div>
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
@@ -833,7 +1010,7 @@ dtype: int64</code></pre>
 </thead>
 <tbody>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">72</td>
+<th data-quarto-table-cell-role="th">72</th>
 <td>NG2 7DL</td>
 <td>52.945107</td>
 <td>-1.135586</td>
@@ -845,7 +1022,7 @@ dtype: int64</code></pre>
 <td>E01033402</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">39</td>
+<th data-quarto-table-cell-role="th">39</th>
 <td>NG8 9QN</td>
 <td>52.959883</td>
 <td>-1.222125</td>
@@ -857,7 +1034,7 @@ dtype: int64</code></pre>
 <td>E01013860</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">37</td>
+<th data-quarto-table-cell-role="th">37</th>
 <td>NG8 3DJ</td>
 <td>52.970564</td>
 <td>-1.219671</td>
@@ -869,7 +1046,7 @@ dtype: int64</code></pre>
 <td>E01013867</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">97</td>
+<th data-quarto-table-cell-role="th">97</th>
 <td>NG9 2QA</td>
 <td>52.930121</td>
 <td>-1.198353</td>
@@ -881,7 +1058,7 @@ dtype: int64</code></pre>
 <td>E01028074</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">59</td>
+<th data-quarto-table-cell-role="th">59</th>
 <td>NG11 7AX</td>
 <td>52.925360</td>
 <td>-1.157251</td>
@@ -906,15 +1083,15 @@ dtype: int64</code></pre>
 <p><a href="https://geoportal.statistics.gov.uk/datasets/e7824b1475604212a2325cd373946235/about">https://geoportal.statistics.gov.uk/…</a></p>
 </blockquote>
 <p>Please note that I have renamed my file to <code>pcd_to_oa11_msoa11_lsoa11.csv</code> from <code>PCD_OA_LSOA_MSOA_LAD_MAY22_UK_LU.csv</code> which was the name it had at download time.</p>
-<div class="cell" data-execution_count="12">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Read the lookup table and display 5 randomly chosen rows</span></span>
+<div id="75569589" class="cell" data-execution_count="12">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Read the lookup table and display 5 randomly chosen rows</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> pd.read_csv(<span class="st">'LOOKUP_GEO/pcd_to_oa11_msoa11_lsoa11.csv'</span>, encoding<span class="op">=</span><span class="st">'ISO-8859-1'</span>, low_memory<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>data.sample(<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>data.sample(<span class="dv">5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="12">
 <div>
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
@@ -936,7 +1113,7 @@ dtype: int64</code></pre>
 </thead>
 <tbody>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">359020</td>
+<th data-quarto-table-cell-role="th">359020</th>
 <td>BT8 6ZS</td>
 <td>BT8 6ZS</td>
 <td>BT8 6ZS</td>
@@ -953,7 +1130,7 @@ dtype: int64</code></pre>
 <td>NaN</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">1700528</td>
+<th data-quarto-table-cell-role="th">1700528</th>
 <td>NW8 9QR</td>
 <td>NW8 9QR</td>
 <td>NW8 9QR</td>
@@ -970,7 +1147,7 @@ dtype: int64</code></pre>
 <td>NaN</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">945738</td>
+<th data-quarto-table-cell-role="th">945738</th>
 <td>GL6 8WR</td>
 <td>GL6 8WR</td>
 <td>GL6 8WR</td>
@@ -987,7 +1164,7 @@ dtype: int64</code></pre>
 <td>NaN</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">1056104</td>
+<th data-quarto-table-cell-role="th">1056104</th>
 <td>HU120NG</td>
 <td>HU12 0NG</td>
 <td>HU12 0NG</td>
@@ -1004,7 +1181,7 @@ dtype: int64</code></pre>
 <td>NaN</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">267517</td>
+<th data-quarto-table-cell-role="th">267517</th>
 <td>BS161UY</td>
 <td>BS16 1UY</td>
 <td>BS16 1UY</td>
@@ -1026,18 +1203,18 @@ dtype: int64</code></pre>
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="13">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Take and rename only the relevant columns ('pcds', 'msoa11cd') of lookup table `data`</span></span>
+<div id="86810964-c66e-4a52-bff2-4dff80cbb6f5" class="cell" data-execution_count="13">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Take and rename only the relevant columns ('pcds', 'msoa11cd') of lookup table `data`</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> data[[<span class="st">'pcds'</span>, <span class="st">'msoa11cd'</span>]].rename({<span class="st">'pcds'</span>:<span class="st">'Postcode'</span>,</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>                                          <span class="st">'msoa11cd'</span>:<span class="st">'MSOA11'</span>}, axis<span class="op">=</span><span class="dv">1</span>)</span>
 <span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Display 5 randomly chosen rows</span></span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>data.sample(<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>data.sample(<span class="dv">5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="13">
 <div>
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
@@ -1047,27 +1224,27 @@ dtype: int64</code></pre>
 </thead>
 <tbody>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">2292291</td>
+<th data-quarto-table-cell-role="th">2292291</th>
 <td>SW18 1BW</td>
 <td>E02000932</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">939836</td>
+<th data-quarto-table-cell-role="th">939836</th>
 <td>GL52 4JT</td>
 <td>E02004670</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">2630775</td>
+<th data-quarto-table-cell-role="th">2630775</th>
 <td>WV12 5TE</td>
 <td>E02002123</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">2617558</td>
+<th data-quarto-table-cell-role="th">2617558</th>
 <td>WS13 6TL</td>
 <td>E02006150</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">663239</td>
+<th data-quarto-table-cell-role="th">663239</th>
 <td>DH7 9RF</td>
 <td>E02004307</td>
 </tr>
@@ -1077,12 +1254,12 @@ dtype: int64</code></pre>
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="14">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Joining 'MSOA11' from the lookup table `data` onto donors `df` using the 'Postcode' column:</span></span>
+<div id="658a7525-f4dd-481c-884e-fb04d806826d" class="cell" data-execution_count="14">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Joining 'MSOA11' from the lookup table `data` onto donors `df` using the 'Postcode' column:</span></span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.merge(data, on<span class="op">=</span><span class="st">'Postcode'</span>, how<span class="op">=</span><span class="st">'left'</span>)</span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a> </span>
 <span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Display number of null values in each column to see if successful:</span></span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>df.isna().<span class="bu">sum</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>df.isna().<span class="bu">sum</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="14">
 <pre><code>Postcode           0
 Latitude           0
@@ -1115,44 +1292,44 @@ dtype: int64</code></pre>
 <blockquote class="blockquote">
 <p><a href="https://www.gov.uk/government/statistics/english-indices-of-deprivation-2019">https://www.gov.uk/government/statistics/…</a></p>
 </blockquote>
-<div class="cell" data-execution_count="15">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Read the LSOA lookup data</span></span>
+<div id="f939d8e5" class="cell" data-execution_count="15">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Read the LSOA lookup data</span></span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>lookup_data <span class="op">=</span> pd.read_csv(<span class="st">'LOOKUP_GEO/LSOA_(2011)_to_LSOA_(2021)_to_Local_Authority_District_(2022)_Lookup_for_England_and_Wales_(Version_2).csv'</span>)</span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Take only the relevant columns of `lookup_data` and rename</span></span>
 <span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>lookup_data <span class="op">=</span> lookup_data[[<span class="st">'LSOA21CD'</span>,<span class="st">'LSOA11CD'</span>]].rename({<span class="st">'LSOA21CD'</span>:<span class="st">'LSOA21'</span>, </span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>                                                           <span class="st">'LSOA11CD'</span>:<span class="st">'LSOA11'</span>}, axis<span class="op">=</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>                                                           <span class="st">'LSOA11CD'</span>:<span class="st">'LSOA11'</span>}, axis<span class="op">=</span><span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div class="cell" data-execution_count="16">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Read the IMD data</span></span>
+<div id="2bdba426-2289-45ea-943d-ea38094cbdbe" class="cell" data-execution_count="16">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Read the IMD data</span></span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>imd_data <span class="op">=</span> pd.read_csv(<span class="st">'LOOKUP_STATS/File_7_-_All_IoD2019_Scores__Ranks__Deciles_and_Population_Denominators_3.csv'</span>)</span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Take only the relevant columns of `imd_data` and rename</span></span>
 <span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>imd_data <span class="op">=</span> imd_data[[<span class="st">'LSOA code (2011)'</span>, <span class="st">'Index of Multiple Deprivation (IMD) Score'</span>]].rename({<span class="st">'LSOA code (2011)'</span>:<span class="st">'LSOA11'</span>, </span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>                                                                                               <span class="st">'Index of Multiple Deprivation (IMD) Score'</span>:<span class="st">'IMD_Score'</span>}, axis<span class="op">=</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>                                                                                               <span class="st">'Index of Multiple Deprivation (IMD) Score'</span>:<span class="st">'IMD_Score'</span>}, axis<span class="op">=</span><span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>There is not a 1-to-1 correspondence between LSOA2011 and LSOA2021. We work around this by aggregating over the different LSOA2011 corresponding to each LSOA2021 and returning the mean of the IMD scores of each.</p>
-<div class="cell" data-execution_count="17">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Merge the IMD data with the lookup data</span></span>
+<div id="215f826d-c4ce-4619-9e64-09709f85fb5a" class="cell" data-execution_count="17">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Merge the IMD data with the lookup data</span></span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>imd_data <span class="op">=</span> imd_data.merge(lookup_data, on<span class="op">=</span><span class="st">'LSOA11'</span>, how<span class="op">=</span><span class="st">'left'</span>)</span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Aggregate the IMD scores for each LSOA21 by taking the mean</span></span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>imd_data <span class="op">=</span> imd_data.groupby(<span class="st">'LSOA21'</span>)[<span class="st">'IMD_Score'</span>].mean().reset_index()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>imd_data <span class="op">=</span> imd_data.groupby(<span class="st">'LSOA21'</span>)[<span class="st">'IMD_Score'</span>].mean().reset_index()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div class="cell" data-execution_count="18">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Joining 'IMD_Score' from the aggregated lookup table `imd_data` onto donors `df` using the 'LSOA21' column</span></span>
+<div id="0deee527-ddb5-48f1-9714-a1c4ca782c1f" class="cell" data-execution_count="18">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Joining 'IMD_Score' from the aggregated lookup table `imd_data` onto donors `df` using the 'LSOA21' column</span></span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.merge(imd_data, on<span class="op">=</span><span class="st">'LSOA21'</span>, how<span class="op">=</span><span class="st">'left'</span>)</span>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Display number of null values in 'IMD_Score' column of `df` after the join</span></span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'IMD_Score'</span>].isna().<span class="bu">sum</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'IMD_Score'</span>].isna().<span class="bu">sum</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="18">
 <pre><code>2</code></pre>
 </div>
 </div>
 <section id="using-knnimputer-to-fill-missing-imd-scores" class="level3">
 <h3 class="anchored" data-anchor-id="using-knnimputer-to-fill-missing-imd-scores">Using <code>KNNImputer</code> to fill missing IMD scores:</h3>
-<div class="cell" data-execution_count="19">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a new dataframe with only the columns of interest</span></span>
+<div id="2bd2222e" class="cell" data-execution_count="19">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a new dataframe with only the columns of interest</span></span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>geo_data <span class="op">=</span> df[[<span class="st">'Latitude'</span>, <span class="st">'Longitude'</span>, <span class="st">'IMD_Score'</span>]]</span>
 <span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the imputer</span></span>
@@ -1165,10 +1342,10 @@ dtype: int64</code></pre>
 <span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>geo_data_filled <span class="op">=</span> pd.DataFrame(geo_data_filled, columns<span class="op">=</span>geo_data.columns, index<span class="op">=</span>geo_data.index)</span>
 <span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Replace the original 'IMD_Score' column with the 'IMD_Score' with missing values filled</span></span>
-<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'IMD_Score'</span>] <span class="op">=</span> geo_data_filled[<span class="st">'IMD_Score'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'IMD_Score'</span>] <span class="op">=</span> geo_data_filled[<span class="st">'IMD_Score'</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div class="cell" data-scrolled="true" data-execution_count="20">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'IMD_Score'</span>].isna().<span class="bu">sum</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="87eed835-819a-4b30-b91c-d13219fa8e84" class="cell" data-scrolled="true" data-execution_count="20">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'IMD_Score'</span>].isna().<span class="bu">sum</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="20">
 <pre><code>0</code></pre>
 </div>
@@ -1182,15 +1359,15 @@ dtype: int64</code></pre>
 <p><a href="https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/populationestimates/datasets/lowersuperoutputareapopulationdensity">https://www.ons.gov.uk/peoplepopulationandcommunity/…</a></p>
 </blockquote>
 <p>Please note I used the ‘Mid-2020: SAPE23DT11’ edition of this dataset.</p>
-<div class="cell" data-execution_count="21">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Read the lookup table and display 5 randomly chosen rows</span></span>
+<div id="f18c645d" class="cell" data-execution_count="21">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Read the lookup table and display 5 randomly chosen rows</span></span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>Pop_density_lookup <span class="op">=</span> pd.read_csv(<span class="st">'LOOKUP_STATS/sape23dt11mid2020lsoapopulationdensity 4(Sheet1).csv'</span>)</span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>Pop_density_lookup.sample(<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>Pop_density_lookup.sample(<span class="dv">5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="21">
 <div>
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
@@ -1203,7 +1380,7 @@ dtype: int64</code></pre>
 </thead>
 <tbody>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">17470</td>
+<th data-quarto-table-cell-role="th">17470</th>
 <td>E01029204</td>
 <td>South Somerset 009C</td>
 <td>1,205</td>
@@ -1211,7 +1388,7 @@ dtype: int64</code></pre>
 <td>302</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">28309</td>
+<th data-quarto-table-cell-role="th">28309</th>
 <td>E01000300</td>
 <td>Barnet 019B</td>
 <td>1,763</td>
@@ -1219,7 +1396,7 @@ dtype: int64</code></pre>
 <td>10,161</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">30690</td>
+<th data-quarto-table-cell-role="th">30690</th>
 <td>E01002662</td>
 <td>Hounslow 017C</td>
 <td>2,658</td>
@@ -1227,7 +1404,7 @@ dtype: int64</code></pre>
 <td>10,862</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">23151</td>
+<th data-quarto-table-cell-role="th">23151</th>
 <td>E01007102</td>
 <td>Sefton 030D</td>
 <td>1,516</td>
@@ -1235,7 +1412,7 @@ dtype: int64</code></pre>
 <td>7,535</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">29991</td>
+<th data-quarto-table-cell-role="th">29991</th>
 <td>E01032790</td>
 <td>Hammersmith and Fulham 023F</td>
 <td>1,440</td>
@@ -1248,18 +1425,18 @@ dtype: int64</code></pre>
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="22">
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Take and rename only the relevant columns ('LSOA Code', 'People per Sq Km') of lookup table `Pop_density_lookup`</span></span>
+<div id="ec12962a-08ae-470f-b9dd-1fb04d294ed0" class="cell" data-execution_count="22">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Take and rename only the relevant columns ('LSOA Code', 'People per Sq Km') of lookup table `Pop_density_lookup`</span></span>
 <span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>Pop_density_lookup <span class="op">=</span> Pop_density_lookup[[<span class="st">'LSOA Code'</span>,<span class="st">'People per Sq Km'</span>]].rename({<span class="st">'LSOA Code'</span>:<span class="st">'LSOA21'</span>, </span>
 <span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>                                                                                  <span class="st">'People per Sq Km'</span>:<span class="st">'PopDensity'</span>},axis<span class="op">=</span><span class="dv">1</span>)</span>
 <span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Display 5 randomly chosen rows</span></span>
-<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>Pop_density_lookup.sample(<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>Pop_density_lookup.sample(<span class="dv">5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="22">
 <div>
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
@@ -1269,27 +1446,27 @@ dtype: int64</code></pre>
 </thead>
 <tbody>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">18268</td>
+<th data-quarto-table-cell-role="th">18268</th>
 <td>E01030319</td>
 <td>1,476</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">10776</td>
+<th data-quarto-table-cell-role="th">10776</th>
 <td>E01021912</td>
 <td>194</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">1907</td>
+<th data-quarto-table-cell-role="th">1907</th>
 <td>E01013840</td>
 <td>6,024</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">15518</td>
+<th data-quarto-table-cell-role="th">15518</th>
 <td>E01026885</td>
 <td>55</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">7355</td>
+<th data-quarto-table-cell-role="th">7355</th>
 <td>E01015276</td>
 <td>9,177</td>
 </tr>
@@ -1299,23 +1476,23 @@ dtype: int64</code></pre>
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="23">
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Joining 'PopDensity' from the lookup table `Pop_density_lookup` onto donors `df` using the 'LSOA21' column:</span></span>
+<div id="1ad4090f-5efe-4cdc-8459-ebf70c8c50a9" class="cell" data-execution_count="23">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Joining 'PopDensity' from the lookup table `Pop_density_lookup` onto donors `df` using the 'LSOA21' column:</span></span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.merge(Pop_density_lookup, on<span class="op">=</span><span class="st">'LSOA21'</span>, how<span class="op">=</span><span class="st">'left'</span>)</span>
 <span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove commas from joined population densities and convert to float type:</span></span>
 <span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'PopDensity'</span>] <span class="op">=</span> df[<span class="st">'PopDensity'</span>].<span class="bu">str</span>.replace(<span class="st">','</span>, <span class="st">''</span>).astype(<span class="bu">float</span>)</span>
 <span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Display number of null values in 'PopDensity' column:</span></span>
-<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'PopDensity'</span>].isna().<span class="bu">sum</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'PopDensity'</span>].isna().<span class="bu">sum</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="23">
 <pre><code>19</code></pre>
 </div>
 </div>
 <section id="using-knnimputer-to-fill-missing-population-densities" class="level3">
 <h3 class="anchored" data-anchor-id="using-knnimputer-to-fill-missing-population-densities">Using <code>KNNImputer</code> to fill missing population densities</h3>
-<div class="cell" data-execution_count="24">
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a new dataframe with only the columns of interest</span></span>
+<div id="0b32e5a4" class="cell" data-execution_count="24">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a new dataframe with only the columns of interest</span></span>
 <span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>pop_data <span class="op">=</span> df[[<span class="st">'Latitude'</span>, <span class="st">'Longitude'</span>, <span class="st">'PopDensity'</span>]]</span>
 <span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the imputer</span></span>
@@ -1328,10 +1505,10 @@ dtype: int64</code></pre>
 <span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>pop_data_filled <span class="op">=</span> pd.DataFrame(pop_data_filled, columns<span class="op">=</span>pop_data.columns, index<span class="op">=</span>pop_data.index)</span>
 <span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Replace original 'PopDensity' column with the 'PopDensity' column with missing values filled</span></span>
-<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'PopDensity'</span>] <span class="op">=</span> pop_data_filled[<span class="st">'PopDensity'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'PopDensity'</span>] <span class="op">=</span> pop_data_filled[<span class="st">'PopDensity'</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div class="cell" data-execution_count="25">
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'PopDensity'</span>].isna().<span class="bu">sum</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="1c218f18-88e9-4dc6-8a02-3a7633f65857" class="cell" data-execution_count="25">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'PopDensity'</span>].isna().<span class="bu">sum</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="25">
 <pre><code>0</code></pre>
 </div>
@@ -1345,15 +1522,15 @@ dtype: int64</code></pre>
 <p><a href="https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/earningsandworkinghours/datasets/smallareaincomeestimatesformiddlelayersuperoutputareasenglandandwales">https://www.ons.gov.uk/employmentandlabourmarket/…</a></p>
 </blockquote>
 <p>Please note that my file <code>MSOA2011_to_Income.csv</code> is the ‘Total Annual Income’ sheet of the Financial year ending 2020 edition of this dataset.</p>
-<div class="cell" data-execution_count="26">
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Read the lookup table and display 5 randomly chosen rows</span></span>
+<div id="f24240e0" class="cell" data-execution_count="26">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Read the lookup table and display 5 randomly chosen rows</span></span>
 <span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>income_lookup <span class="op">=</span> pd.read_csv(<span class="st">'LOOKUP_STATS/MSOA2011_to_Income.csv'</span>, encoding<span class="op">=</span><span class="st">'ISO-8859-1'</span>, low_memory<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>income_lookup.sample(<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>income_lookup.sample(<span class="dv">5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="26">
 <div>
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
@@ -1371,7 +1548,7 @@ dtype: int64</code></pre>
 </thead>
 <tbody>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">6820</td>
+<th data-quarto-table-cell-role="th">6820</th>
 <td>W02000030</td>
 <td>Conwy 004</td>
 <td>W06000003</td>
@@ -1384,7 +1561,7 @@ dtype: int64</code></pre>
 <td>12,000</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">2082</td>
+<th data-quarto-table-cell-role="th">2082</th>
 <td>E02006827</td>
 <td>Amber Valley 017</td>
 <td>E07000032</td>
@@ -1397,7 +1574,7 @@ dtype: int64</code></pre>
 <td>12,300</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">6309</td>
+<th data-quarto-table-cell-role="th">6309</th>
 <td>E02003135</td>
 <td>Plymouth 014</td>
 <td>E06000026</td>
@@ -1410,7 +1587,7 @@ dtype: int64</code></pre>
 <td>14,800</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">1074</td>
+<th data-quarto-table-cell-role="th">1074</th>
 <td>E02005327</td>
 <td>Wyre 009</td>
 <td>E07000128</td>
@@ -1423,7 +1600,7 @@ dtype: int64</code></pre>
 <td>14,300</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">4319</td>
+<th data-quarto-table-cell-role="th">4319</th>
 <td>E02000880</td>
 <td>Tower Hamlets 017</td>
 <td>E09000030</td>
@@ -1441,18 +1618,18 @@ dtype: int64</code></pre>
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="27">
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Take and rename only the relevant columns ('MSOA code', 'Total annual income (£)') of lookup table `income_lookup`</span></span>
+<div id="b56a623d-c4c0-4539-9e30-b25d3cfdc09d" class="cell" data-execution_count="27">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Take and rename only the relevant columns ('MSOA code', 'Total annual income (£)') of lookup table `income_lookup`</span></span>
 <span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>income_lookup <span class="op">=</span> income_lookup[[<span class="st">'MSOA code'</span>,<span class="st">'Total annual income (£)'</span>]].rename({<span class="st">'MSOA code'</span>:<span class="st">'MSOA11'</span>, </span>
 <span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>                                                                               <span class="st">'Total annual income (£)'</span>:<span class="st">'AvgAreaIncome'</span>}, axis<span class="op">=</span><span class="dv">1</span>)</span>
 <span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Display 5 randomly chosen rows</span></span>
-<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>income_lookup.sample(<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>income_lookup.sample(<span class="dv">5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="27">
 <div>
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
@@ -1462,27 +1639,27 @@ dtype: int64</code></pre>
 </thead>
 <tbody>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">717</td>
+<th data-quarto-table-cell-role="th">717</th>
 <td>E02001117</td>
 <td>46,900</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">2198</td>
+<th data-quarto-table-cell-role="th">2198</th>
 <td>E02005364</td>
 <td>42,500</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">4561</td>
+<th data-quarto-table-cell-role="th">4561</th>
 <td>E02000195</td>
 <td>59,500</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">6000</td>
+<th data-quarto-table-cell-role="th">6000</th>
 <td>E02006543</td>
 <td>45,500</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">3514</td>
+<th data-quarto-table-cell-role="th">3514</th>
 <td>E02004466</td>
 <td>51,700</td>
 </tr>
@@ -1492,23 +1669,23 @@ dtype: int64</code></pre>
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="28">
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Joining 'AvgAreaIncome' from the lookup table `income_lookup` onto donors `df` using the 'MSOA11' column:</span></span>
+<div id="59b1bd12" class="cell" data-execution_count="28">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Joining 'AvgAreaIncome' from the lookup table `income_lookup` onto donors `df` using the 'MSOA11' column:</span></span>
 <span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.merge(income_lookup, on<span class="op">=</span><span class="st">'MSOA11'</span>, how<span class="op">=</span><span class="st">'left'</span>)</span>
 <span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Removing commas from incomes and converting to float type:</span></span>
 <span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'AvgAreaIncome'</span>] <span class="op">=</span> df[<span class="st">'AvgAreaIncome'</span>].<span class="bu">str</span>.replace(<span class="st">','</span>, <span class="st">''</span>).astype(<span class="bu">float</span>)</span>
 <span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Display number of null values in 'AvgAreaIncome' column:</span></span>
-<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'AvgAreaIncome'</span>].isna().<span class="bu">sum</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'AvgAreaIncome'</span>].isna().<span class="bu">sum</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="28">
 <pre><code>1</code></pre>
 </div>
 </div>
 <section id="using-knnimputer-to-fill-missing-avgareaincome-values" class="level3">
 <h3 class="anchored" data-anchor-id="using-knnimputer-to-fill-missing-avgareaincome-values">Using <code>KNNImputer</code> to fill missing ‘AvgAreaIncome’ values</h3>
-<div class="cell" data-execution_count="29">
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a new dataframe `inc_data` with only the columns of interest</span></span>
+<div id="10a4d797" class="cell" data-execution_count="29">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a new dataframe `inc_data` with only the columns of interest</span></span>
 <span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>inc_data <span class="op">=</span> df[[<span class="st">'Latitude'</span>, <span class="st">'Longitude'</span>, <span class="st">'AvgAreaIncome'</span>]]</span>
 <span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the imputer</span></span>
@@ -1521,10 +1698,10 @@ dtype: int64</code></pre>
 <span id="cb37-11"><a href="#cb37-11" aria-hidden="true" tabindex="-1"></a>inc_data_filled <span class="op">=</span> pd.DataFrame(inc_data_filled, columns<span class="op">=</span>inc_data.columns, index<span class="op">=</span>inc_data.index)</span>
 <span id="cb37-12"><a href="#cb37-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb37-13"><a href="#cb37-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Replace original 'AvgAreaIncome' column with the corresponding column with missing values filled</span></span>
-<span id="cb37-14"><a href="#cb37-14" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'AvgAreaIncome'</span>] <span class="op">=</span> inc_data_filled[<span class="st">'AvgAreaIncome'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb37-14"><a href="#cb37-14" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'AvgAreaIncome'</span>] <span class="op">=</span> inc_data_filled[<span class="st">'AvgAreaIncome'</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div class="cell" data-execution_count="30">
-<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'AvgAreaIncome'</span>].isna().<span class="bu">sum</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="373e126b" class="cell" data-execution_count="30">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'AvgAreaIncome'</span>].isna().<span class="bu">sum</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="30">
 <pre><code>0</code></pre>
 </div>
@@ -1534,8 +1711,8 @@ dtype: int64</code></pre>
 </section>
 <section id="visualising-results-with-folium" class="level1">
 <h1>VISUALISING RESULTS WITH FOLIUM</h1>
-<div class="cell" data-execution_count="31">
-<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>m <span class="op">=</span> folium.Map(location<span class="op">=</span>[<span class="fl">52.9548</span>, <span class="op">-</span><span class="fl">1.1581</span>], zoom_start<span class="op">=</span><span class="dv">12</span>)</span>
+<div id="52e08d85" class="cell" data-execution_count="31">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>m <span class="op">=</span> folium.Map(location<span class="op">=</span>[<span class="fl">52.9548</span>, <span class="op">-</span><span class="fl">1.1581</span>], zoom_start<span class="op">=</span><span class="dv">12</span>)</span>
 <span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>colors <span class="op">=</span> [<span class="st">'green'</span>, <span class="st">'yellow'</span>, <span class="st">'orange'</span>, <span class="st">'red'</span>, <span class="st">'purple'</span>]</span>
 <span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>linear_colormap <span class="op">=</span> LinearColormap(colors<span class="op">=</span>colors,</span>
@@ -1586,7 +1763,7 @@ dtype: int64</code></pre>
 <span id="cb40-49"><a href="#cb40-49" aria-hidden="true" tabindex="-1"></a>linear_colormap.add_to(m)</span>
 <span id="cb40-50"><a href="#cb40-50" aria-hidden="true" tabindex="-1"></a>linear_colormap.caption <span class="op">=</span> <span class="st">'Population Density (Ppl per Sq Km)'</span></span>
 <span id="cb40-51"><a href="#cb40-51" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-52"><a href="#cb40-52" aria-hidden="true" tabindex="-1"></a>m</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb40-52"><a href="#cb40-52" aria-hidden="true" tabindex="-1"></a>m</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="31">
 <div style="width:100%;"><div style="position:relative;width:100%;height:0;padding-bottom:60%;"><span style="color:#565656">Make this Notebook Trusted to load map: File -&gt; Trust Notebook</span><iframe srcdoc="<!DOCTYPE html>
 <html>
@@ -3824,8 +4001,8 @@ dtype: int64</code></pre>
 <h1>Relationships between demographic statistics &amp; donation history</h1>
 <section id="imd-score" class="level2">
 <h2 class="anchored" data-anchor-id="imd-score">IMD Score</h2>
-<div class="cell" data-execution_count="32">
-<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>fig, axs <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">24</span>, <span class="dv">8</span>))</span>
+<div id="7241e753" class="cell" data-execution_count="32">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>fig, axs <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">24</span>, <span class="dv">8</span>))</span>
 <span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Total Donated vs IMD Score scatterplot</span></span>
 <span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>sns.scatterplot(x<span class="op">=</span>df[<span class="st">'IMD_Score'</span>], y<span class="op">=</span>df[<span class="st">'TotalDonated'</span>], ax<span class="op">=</span>axs[<span class="dv">0</span>])</span>
@@ -3846,16 +4023,20 @@ dtype: int64</code></pre>
 <span id="cb41-19"><a href="#cb41-19" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">1</span>].set_ylabel(<span class="st">'Number of Donations'</span>)</span>
 <span id="cb41-20"><a href="#cb41-20" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">1</span>].set_title(<span class="st">'Number of Donations vs IMD Score'</span>)</span>
 <span id="cb41-21"><a href="#cb41-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb41-22"><a href="#cb41-22" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb41-22"><a href="#cb41-22" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
-<p><img src="index_files/figure-html/cell-33-output-1.png" class="img-fluid"></p>
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/cell-33-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
 </div>
 </div>
 </section>
 <section id="population-density" class="level2">
 <h2 class="anchored" data-anchor-id="population-density">Population Density</h2>
-<div class="cell" data-execution_count="33">
-<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>fig, axs <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">24</span>, <span class="dv">8</span>))</span>
+<div id="b4a127dd" class="cell" data-execution_count="33">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>fig, axs <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">24</span>, <span class="dv">8</span>))</span>
 <span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Total Donated vs Population Density scatterplot</span></span>
 <span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>sns.scatterplot(x<span class="op">=</span>df[<span class="st">'PopDensity'</span>], y<span class="op">=</span>df[<span class="st">'TotalDonated'</span>], ax<span class="op">=</span>axs[<span class="dv">0</span>])</span>
@@ -3879,16 +4060,20 @@ dtype: int64</code></pre>
 <span id="cb42-22"><a href="#cb42-22" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">1</span>].set_xlabel(<span class="st">'Local Population Density (People per Sq Km)'</span>)</span>
 <span id="cb42-23"><a href="#cb42-23" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">1</span>].set_title(<span class="st">'Number of Donations vs Population Density'</span>)</span>
 <span id="cb42-24"><a href="#cb42-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb42-25"><a href="#cb42-25" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb42-25"><a href="#cb42-25" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
-<p><img src="index_files/figure-html/cell-34-output-1.png" class="img-fluid"></p>
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/cell-34-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
 </div>
 </div>
 </section>
 <section id="average-income" class="level2">
 <h2 class="anchored" data-anchor-id="average-income">Average Income</h2>
-<div class="cell" data-execution_count="34">
-<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>fig, axs <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">24</span>, <span class="dv">8</span>))</span>
+<div id="f8a52ec5" class="cell" data-execution_count="34">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>fig, axs <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">24</span>, <span class="dv">8</span>))</span>
 <span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Total Donated vs Average Income scatterplot</span></span>
 <span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>sns.scatterplot(x<span class="op">=</span>df[<span class="st">'AvgAreaIncome'</span>], y<span class="op">=</span>df[<span class="st">'TotalDonated'</span>], ax<span class="op">=</span>axs[<span class="dv">0</span>])</span>
@@ -3912,9 +4097,13 @@ dtype: int64</code></pre>
 <span id="cb43-22"><a href="#cb43-22" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">1</span>].set_xlabel(<span class="st">'Average Income (£)'</span>)</span>
 <span id="cb43-23"><a href="#cb43-23" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">1</span>].set_title(<span class="st">'Number of Donations vs Average Income'</span>)</span>
 <span id="cb43-24"><a href="#cb43-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb43-25"><a href="#cb43-25" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb43-25"><a href="#cb43-25" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
-<p><img src="index_files/figure-html/cell-35-output-1.png" class="img-fluid"></p>
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/cell-35-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
 </div>
 </div>
 </section>
@@ -3938,158 +4127,71 @@ dtype: int64</code></pre>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
-window.document.addEventListener("DOMContentLoaded", function (event) {
-  const toggleBodyColorMode = (bsSheetEl) => {
-    const mode = bsSheetEl.getAttribute("data-mode");
-    const bodyEl = window.document.querySelector("body");
-    if (mode === "dark") {
-      bodyEl.classList.add("quarto-dark");
-      bodyEl.classList.remove("quarto-light");
-    } else {
-      bodyEl.classList.add("quarto-light");
-      bodyEl.classList.remove("quarto-dark");
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
     }
-  }
-  const toggleBodyColorPrimary = () => {
-    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
-    if (bsSheetEl) {
-      toggleBodyColorMode(bsSheetEl);
-    }
-  }
-  toggleBodyColorPrimary();  
-  const disableStylesheet = (stylesheets) => {
-    for (let i=0; i < stylesheets.length; i++) {
-      const stylesheet = stylesheets[i];
-      stylesheet.rel = 'prefetch';
-    }
-  }
-  const enableStylesheet = (stylesheets) => {
-    for (let i=0; i < stylesheets.length; i++) {
-      const stylesheet = stylesheets[i];
-      stylesheet.rel = 'stylesheet';
-    }
-  }
-  const manageTransitions = (selector, allowTransitions) => {
-    const els = window.document.querySelectorAll(selector);
-    for (let i=0; i < els.length; i++) {
-      const el = els[i];
-      if (allowTransitions) {
-        el.classList.remove('notransition');
-      } else {
-        el.classList.add('notransition');
-      }
-    }
-  }
-  const toggleColorMode = (alternate) => {
-    // Switch the stylesheets
-    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
-    manageTransitions('#quarto-margin-sidebar .nav-link', false);
-    if (alternate) {
-      enableStylesheet(alternateStylesheets);
-      for (const sheetNode of alternateStylesheets) {
-        if (sheetNode.id === "quarto-bootstrap") {
-          toggleBodyColorMode(sheetNode);
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
         }
       }
-    } else {
-      disableStylesheet(alternateStylesheets);
-      toggleBodyColorPrimary();
-    }
-    manageTransitions('#quarto-margin-sidebar .nav-link', true);
-    // Switch the toggles
-    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
-    for (let i=0; i < toggles.length; i++) {
-      const toggle = toggles[i];
-      if (toggle) {
-        if (alternate) {
-          toggle.classList.add("alternate");     
-        } else {
-          toggle.classList.remove("alternate");
-        }
-      }
-    }
-    // Hack to workaround the fact that safari doesn't
-    // properly recolor the scrollbar when toggling (#1455)
-    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
-      manageTransitions("body", false);
-      window.scrollTo(0, 1);
-      setTimeout(() => {
-        window.scrollTo(0, 0);
-        manageTransitions("body", true);
-      }, 40);  
-    }
-  }
-  const isFileUrl = () => { 
-    return window.location.protocol === 'file:';
-  }
-  const hasAlternateSentinel = () => {  
-    let styleSentinel = getColorSchemeSentinel();
-    if (styleSentinel !== null) {
-      return styleSentinel === "alternate";
-    } else {
       return false;
     }
-  }
-  const setStyleSentinel = (alternate) => {
-    const value = alternate ? "alternate" : "default";
-    if (!isFileUrl()) {
-      window.localStorage.setItem("quarto-color-scheme", value);
-    } else {
-      localAlternateSentinel = value;
-    }
-  }
-  const getColorSchemeSentinel = () => {
-    if (!isFileUrl()) {
-      const storageValue = window.localStorage.getItem("quarto-color-scheme");
-      return storageValue != null ? storageValue : localAlternateSentinel;
-    } else {
-      return localAlternateSentinel;
-    }
-  }
-  let localAlternateSentinel = 'default';
-  // Dark / light mode switch
-  window.quartoToggleColorScheme = () => {
-    // Read the current dark / light value 
-    let toAlternate = !hasAlternateSentinel();
-    toggleColorMode(toAlternate);
-    setStyleSentinel(toAlternate);
-  };
-  // Ensure there is a toggle, if there isn't float one in the top right
-  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
-    const a = window.document.createElement('a');
-    a.classList.add('top-right');
-    a.classList.add('quarto-color-scheme-toggle');
-    a.href = "";
-    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
-    const i = window.document.createElement("i");
-    i.classList.add('bi');
-    a.appendChild(i);
-    window.document.body.appendChild(a);
-  }
-  // Switch to dark mode if need be
-  if (hasAlternateSentinel()) {
-    toggleColorMode(true);
-  } else {
-    toggleColorMode(false);
-  }
-  const icon = "";
-  const anchorJS = new window.AnchorJS();
-  anchorJS.options = {
-    placement: 'right',
-    icon: icon
-  };
-  anchorJS.add('.anchored');
-  const isCodeAnnotation = (el) => {
-    for (const clz of el.classList) {
-      if (clz.startsWith('code-annotation-')) {                     
-        return true;
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
       }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
     }
-    return false;
-  }
-  const clipboard = new window.ClipboardJS('.code-copy-button', {
-    text: function(trigger) {
-      const codeEl = trigger.previousElementSibling.cloneNode(true);
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
       for (const childEl of codeEl.children) {
         if (isCodeAnnotation(childEl)) {
           childEl.remove();
@@ -4097,195 +4199,348 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       }
       return codeEl.innerText;
     }
-  });
-  clipboard.on('success', function(e) {
-    // button target
-    const button = e.trigger;
-    // don't keep focus
-    button.blur();
-    // flash "checked"
-    button.classList.add('code-copy-button-checked');
-    var currentTitle = button.getAttribute("title");
-    button.setAttribute("title", "Copied!");
-    let tooltip;
-    if (window.bootstrap) {
-      button.setAttribute("data-bs-toggle", "tooltip");
-      button.setAttribute("data-bs-placement", "left");
-      button.setAttribute("data-bs-title", "Copied!");
-      tooltip = new bootstrap.Tooltip(button, 
-        { trigger: "manual", 
-          customClass: "code-copy-button-tooltip",
-          offset: [0, -8]});
-      tooltip.show();    
-    }
-    setTimeout(function() {
-      if (tooltip) {
-        tooltip.hide();
-        button.removeAttribute("data-bs-title");
-        button.removeAttribute("data-bs-toggle");
-        button.removeAttribute("data-bs-placement");
-      }
-      button.setAttribute("title", currentTitle);
-      button.classList.remove('code-copy-button-checked');
-    }, 1000);
-    // clear code selection
-    e.clearSelection();
-  });
-  function tippyHover(el, contentFn) {
-    const config = {
-      allowHTML: true,
-      content: contentFn,
-      maxWidth: 500,
-      delay: 100,
-      arrow: false,
-      appendTo: function(el) {
-          return el.parentElement;
-      },
-      interactive: true,
-      interactiveBorder: 10,
-      theme: 'quarto',
-      placement: 'bottom-start'
-    };
-    window.tippy(el, config); 
-  }
-  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
-  for (var i=0; i<noterefs.length; i++) {
-    const ref = noterefs[i];
-    tippyHover(ref, function() {
-      // use id or data attribute instead here
-      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
-      try { href = new URL(href).hash; } catch {}
-      const id = href.replace(/^#\/?/, "");
-      const note = window.document.getElementById(id);
-      return note.innerHTML;
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
     });
-  }
-      let selectedAnnoteEl;
-      const selectorForAnnotation = ( cell, annotation) => {
-        let cellAttr = 'data-code-cell="' + cell + '"';
-        let lineAttr = 'data-code-annotation="' +  annotation + '"';
-        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
-        return selector;
-      }
-      const selectCodeLines = (annoteEl) => {
-        const doc = window.document;
-        const targetCell = annoteEl.getAttribute("data-target-cell");
-        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
-        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
-        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
-        const lineIds = lines.map((line) => {
-          return targetCell + "-" + line;
-        })
-        let top = null;
-        let height = null;
-        let parent = null;
-        if (lineIds.length > 0) {
-            //compute the position of the single el (top and bottom and make a div)
-            const el = window.document.getElementById(lineIds[0]);
-            top = el.offsetTop;
-            height = el.offsetHeight;
-            parent = el.parentElement.parentElement;
-          if (lineIds.length > 1) {
-            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
-            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
-            height = bottom - top;
-          }
-          if (top !== null && height !== null && parent !== null) {
-            // cook up a div (if necessary) and position it 
-            let div = window.document.getElementById("code-annotation-line-highlight");
-            if (div === null) {
-              div = window.document.createElement("div");
-              div.setAttribute("id", "code-annotation-line-highlight");
-              div.style.position = 'absolute';
-              parent.appendChild(div);
-            }
-            div.style.top = top - 2 + "px";
-            div.style.height = height + 4 + "px";
-            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
-            if (gutterDiv === null) {
-              gutterDiv = window.document.createElement("div");
-              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
-              gutterDiv.style.position = 'absolute';
-              const codeCell = window.document.getElementById(targetCell);
-              const gutter = codeCell.querySelector('.code-annotation-gutter');
-              gutter.appendChild(gutterDiv);
-            }
-            gutterDiv.style.top = top - 2 + "px";
-            gutterDiv.style.height = height + 4 + "px";
-          }
-          selectedAnnoteEl = annoteEl;
-        }
-      };
-      const unselectCodeLines = () => {
-        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
-        elementsIds.forEach((elId) => {
-          const div = window.document.getElementById(elId);
-          if (div) {
-            div.remove();
-          }
-        });
-        selectedAnnoteEl = undefined;
-      };
-      // Attach click handler to the DT
-      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
-      for (const annoteDlNode of annoteDls) {
-        annoteDlNode.addEventListener('click', (event) => {
-          const clickedEl = event.target;
-          if (clickedEl !== selectedAnnoteEl) {
-            unselectCodeLines();
-            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
-            if (activeEl) {
-              activeEl.classList.remove('code-annotation-active');
-            }
-            selectCodeLines(clickedEl);
-            clickedEl.classList.add('code-annotation-active');
-          } else {
-            // Unselect the line
-            unselectCodeLines();
-            clickedEl.classList.remove('code-annotation-active');
-          }
-        });
-      }
-  const findCites = (el) => {
-    const parentEl = el.parentElement;
-    if (parentEl) {
-      const cites = parentEl.dataset.cites;
-      if (cites) {
-        return {
-          el,
-          cites: cites.split(' ')
-        };
-      } else {
-        return findCites(el.parentElement)
-      }
-    } else {
-      return undefined;
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
     }
-  };
-  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
-  for (var i=0; i<bibliorefs.length; i++) {
-    const ref = bibliorefs[i];
-    const citeInfo = findCites(ref);
-    if (citeInfo) {
-      tippyHover(citeInfo.el, function() {
-        var popup = window.document.createElement('div');
-        citeInfo.cites.forEach(function(cite) {
-          var citeDiv = window.document.createElement('div');
-          citeDiv.classList.add('hanging-indent');
-          citeDiv.classList.add('csl-entry');
-          var biblioDiv = window.document.getElementById('ref-' + cite);
-          if (biblioDiv) {
-            citeDiv.innerHTML = biblioDiv.innerHTML;
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/danieljamessmith\.github\.io\/portfolio\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
           }
-          popup.appendChild(citeDiv);
-        });
-        return popup.innerHTML;
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
       });
     }
-  }
-});
-</script>
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
 </div> <!-- /content -->
+
 
 
 
