@@ -1,267 +1,71 @@
 {
   "about.qmd": {
-    "about.html": "4fe51410"
-  },
-  "posts/post-with-code/index.ipynb": {
-    "index.html": "e65cd97c"
-  },
-  "posts/welcome/index.qmd": {
-    "index.html": "9f26b196"
-  },
-  "index.qmd": {
-    "index.html": "09704b50"
-  },
-  "posts/post-with-code/04-Ecommerce Purchases Exercise - Solutions.ipynb": {
-    "04-Ecommerce Purchases Exercise - Solutions.html": "d3637db9"
-  },
-  "posts/Test Post 1/04-Ecommerce Purchases Exercise - Solutions.ipynb": {
-    "04-Ecommerce Purchases Exercise - Solutions.html": "54134eb5"
-  },
-  "posts/Spaceship Titanic/The Spaceship Titanic with LightGBM.ipynb": {
-    "The Spaceship Titanic with LightGBM.html": "02a08c2c"
-  },
-  "posts/The Spaceship Titanic with LightGBM.ipynb": {
-    "The Spaceship Titanic with LightGBM.html": "e2704477"
-  },
-  "posts/Energy Forecasting with XGBoost/post - predicting energy consumption with XGBoost.ipynb": {
-    "post - predicting energy consumption with XGBoost.html": "ae3ca4d2"
-  },
-  "posts/Log Reg with NN Mindset/LogReg with NN Mindset.ipynb": {
-    "LogReg with NN Mindset.html": "3eea277a"
-  },
-  "posts/1 - Spaceship Titanic with LightGBM/index.ipynb": {
-    "index.html": "68c6d359"
-  },
-  "posts/2 - Energy Forecasting with XGBoost/index.ipynb": {
-    "index.html": "48169924"
-  },
-  "posts/3 - Log Reg with NN Mindset/index.ipynb": {
-    "index.html": "11cb4a7c"
-  },
-  "posts/D2 - Random Variables/index.ipynb": {
-    "index.html": "94637d45"
-  },
-  "posts/D1 - Charge-Off Prediction with a Neural Network/index.ipynb": {
-    "index.html": "f9404110"
-  },
-  "posts/4 - Sentiment Analysis with VADER and RoBERTa/index.ipynb": {
-    "index.html": "3545d2ce"
-  },
-  "posts/5 - Geocoding Postcodes with Python/index.ipynb": {
-    "index.html": "9f059891"
-  },
-  "posts/5 - Geocoding Postcodes with Python/Untitled.ipynb": {
-    "Untitled.html": "ce280849"
-  },
-  "posts/Draft - Model Selection and Tuning with Optuna for Loan Charge-Off Prediction/index.ipynb": {
-    "index.html": "a2683174"
-  },
-  "posts/New folder/Untitled.ipynb": {
-    "Untitled.html": "cf4662f7"
-  },
-  "posts/New folder/Untitled1.ipynb": {
-    "Untitled1.html": "6fb64bf2"
-  },
-  "posts/New folder/index.ipynb": {
-    "index.html": "de23e35e"
-  },
-  "posts/6 - Folium Maps/index.ipynb": {
-    "index.html": "ca196562"
-  },
-  "posts/6 - Folium Maps/Untitled.ipynb": {
-    "Untitled.html": "1ba1560e"
-  },
-  "posts/7 - Attaching Statistics/AttachingStats.ipynb": {
-    "AttachingStats.html": "d0e6bea9"
-  },
-  "posts/Draft - Attaching Statistics/AttachingStats.ipynb": {
-    "AttachingStats.html": "cb3afc41"
-  },
-  "posts/7 - Model Selection and Tuning with Optuna for Loan Charge-Off Prediction/index.ipynb": {
-    "index.html": "321e6680"
-  },
-  "posts/Draft - Boltzmann Transport Eqn/index.ipynb": {
-    "index.html": "1c7c84a4"
-  },
-  "posts/5 - Boltzmann Transport Eqn copy/index.md": {
-    "index.html": "2e3019a3"
-  },
-  "posts/5 - Boltzmann Transport Eqn/index.ipynb": {
-    "index.html": "9f54c58b"
-  },
-  "posts/6 - Geocoding Postcodes with Python/index.ipynb": {
-    "index.html": "270f2f8e"
-  },
-  "posts/7 - Folium Maps/index.ipynb": {
-    "index.html": "e9f0e105"
-  },
-  "posts/7 - Folium Maps/Untitled.ipynb": {
-    "Untitled.html": "f41227a2"
-  },
-  "posts/8 - Model Selection and Tuning with Optuna for Loan Charge-Off Prediction/index.ipynb": {
-    "index.html": "cf5921a4"
-  },
-  "posts/5 - Boltzmann Transport Eqn (.md)/index.md": {
-    "index.html": "20a6a835"
-  },
-  "posts/BTE1/index.ipynb": {
-    "index.html": "e494b0af"
-  },
-  "posts/DRAFT_ATTACHING_STATS/AttachingStats.ipynb": {
-    "AttachingStats.html": "d86e7eab"
-  },
-  "posts/FOLIUM_EH/index.ipynb": {
-    "index.html": "63659c5f"
-  },
-  "posts/FOLIUM_EH/Untitled.ipynb": {
-    "Untitled.html": "7c488b7d"
-  },
-  "posts/GEOCODE_PCDS/index.ipynb": {
-    "index.html": "3c331627"
-  },
-  "posts/LR_NN_MIND/index.ipynb": {
-    "index.html": "448050b5"
-  },
-  "posts/SA_NLTK_HF/index.ipynb": {
-    "index.html": "88d9502b"
-  },
-  "posts/SELECTION_TUNING_OPTUNA/index.ipynb": {
-    "index.html": "3c791f38"
-  },
-  "posts/ST_LGBM/index.ipynb": {
-    "index.html": "3621b121"
-  },
-  "posts/TCF_XGB/index.ipynb": {
-    "index.html": "e0df6e03"
-  },
-  "posts/BTE1/index.md": {
-    "index.html": "22a4d06e"
-  },
-  "posts/BTE1/ipynb/index.ipynb": {
-    "index.html": "e6cc803f"
-  },
-  "posts/BTE2/index.md": {
-    "index.html": "496cecd7"
-  },
-  "posts/BTE2/ipynb/index.ipynb": {
-    "index.html": "60959783"
-  },
-  "posts/DRAFTS/DRAFT_ATTACHING_STATS/AttachingStats.ipynb": {
-    "AttachingStats.html": "ab53e7aa"
-  },
-  "posts/DRAFTS/DRAFT_BTE3/ipynb/index.ipynb": {
-    "index.html": "e17ea52d"
-  },
-  "posts/BTE3/index.md": {
-    "index.html": "192cf00c"
-  },
-  "posts/BTE3/ipynb/index.ipynb": {
-    "index.html": "a90cd255"
-  },
-  "posts/DRAFTS/DRAFT_BTE4/ipynb/index.ipynb": {
-    "index.html": "d235b279"
-  },
-  "posts/eh1/index.ipynb": {
-    "index.html": "249505fc"
-  },
-  "posts/eh2/index.ipynb": {
-    "index.html": "93449f4b"
-  },
-  "posts/eh2/Untitled.ipynb": {
-    "Untitled.html": "e4d4f6ec"
-  },
-  "posts/k1/index.ipynb": {
-    "index.html": "0c7fac49"
-  },
-  "posts/k2/index.ipynb": {
-    "index.html": "e461d888"
-  },
-  "posts/ng1/index.ipynb": {
-    "index.html": "bb0f7ef4"
-  },
-  "posts/yt1/index.ipynb": {
-    "index.html": "06b9500d"
-  },
-  "posts/yt2/index.ipynb": {
-    "index.html": "d8ede7b2"
-  },
-  "posts/bte3/index.md": {
-    "index.html": "9c216782"
-  },
-  "posts/eh3/index.ipynb": {
-    "index.html": "94788474"
-  },
-  "posts/bte1/index.md": {
-    "index.html": "3c0ddf3f"
-  },
-  "posts/bte1/ipynb/index.ipynb": {
-    "index.html": "7acfd6ad"
-  },
-  "posts/bte2/index.md": {
-    "index.html": "f3d32ede"
-  },
-  "posts/bte2/ipynb/index.ipynb": {
-    "index.html": "b8ce2f75"
-  },
-  "posts/bte3/ipynb/index.ipynb": {
-    "index.html": "50bbcf51"
-  },
-  "posts/drafts/DRAFT_ATTACHING_STATS/AttachingStats.ipynb": {
-    "AttachingStats.html": "48eb6ba3"
-  },
-  "posts/drafts/DRAFT_BTE4/ipynb/index.ipynb": {
-    "index.html": "b026117a"
-  },
-  "posts/bte1/index.ipynb": {
-    "index.html": "430ff489"
-  },
-  "posts/bte1/ipynb/index.md": {
-    "index.html": "a4b3fc06"
-  },
-  "posts/bte2/index.ipynb": {
-    "index.html": "8f948b5c"
-  },
-  "posts/bte2/ipynb/index.md": {
-    "index.html": "db773d8b"
-  },
-  "posts/bte3/index.ipynb": {
-    "index.html": "0ec1c576"
-  },
-  "posts/bte3/ipynb/index.md": {
-    "index.html": "b4bbaa40"
+    "about.html": "39278bd5"
   },
   "posts/eh4/index.ipynb": {
-    "index.html": "080d790c"
+    "index.html": "be4d539f"
+  },
+  "index.qmd": {
+    "index.html": "952ebbab"
+  },
+  "posts/bte1/index.ipynb": {
+    "index.html": "fad0bd03"
+  },
+  "posts/bte2/index.ipynb": {
+    "index.html": "cd3b7e18"
+  },
+  "posts/bte3/index.ipynb": {
+    "index.html": "9d692423"
   },
   "posts/bte4/index.ipynb": {
-    "index.html": "3bfcf7ab"
+    "index.html": "e3555f5f"
+  },
+  "posts/eh1/index.ipynb": {
+    "index.html": "e3a44387"
+  },
+  "posts/eh2/index.ipynb": {
+    "index.html": "fe53161d"
+  },
+  "posts/eh3/index.ipynb": {
+    "index.html": "3153ca51"
   },
   "posts/eh5/index.ipynb": {
-    "index.html": "a8a98262",
-    "index.out.ipynb": "52462bf3",
-    "index.tex": "8d0206c3"
+    "index.html": "a6f0cff7"
   },
-  "posts/yt3/index.ipynb": {
-    "index.html": "188b5b06",
-    "index.out.ipynb": "2d3f5b1f",
-    "index.tex": "3dba24ce"
+  "posts/k1/index.ipynb": {
+    "index.html": "31d9fc3f"
   },
-  "docs/posts/yt3/index.out.ipynb": {
-    "index.out.html": "34543b5c"
+  "posts/k2/index.ipynb": {
+    "index.html": "ba9678c1"
+  },
+  "posts/ng1/index.ipynb": {
+    "index.html": "409b6e88"
   },
   "posts/ng2/index.ipynb": {
-    "index.html": "a7bd8ba5"
+    "index.html": "ccd7bd3e"
   },
   "posts/ng3/index.ipynb": {
-    "index.html": "24eb1851"
+    "index.html": "4dad5228"
   },
-  "posts/yt4/index.ipynb": {
-    "index.html": "44f216ee"
-  },
-  "posts/STEP1/Untitled.ipynb": {
-    "Untitled.html": "9d7315a4"
+  "posts/resurrection/index.qmd": {
+    "index.html": "0e1febea"
   },
   "posts/ste1/index.ipynb": {
-    "index.html": "6ce9a1e6"
+    "index.html": "702124b0"
+  },
+  "posts/yt1/index.ipynb": {
+    "index.html": "b2e0a9e7"
+  },
+  "posts/yt2/index.ipynb": {
+    "index.html": "87dca16c"
+  },
+  "posts/yt3/index.ipynb": {
+    "index.html": "4cd96422"
+  },
+  "posts/yt4/index.ipynb": {
+    "index.html": "76d6960f"
+  },
+  "RESURRECTION_PLAN.md": {
+    "RESURRECTION_PLAN.html": "4631afb5"
   }
 }

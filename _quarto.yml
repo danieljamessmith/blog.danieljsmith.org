@@ -2,30 +2,33 @@ project:
   type: website
   output-dir: docs
 
-website:
-  title: "Blog"
-  site-url: "https://danieljamessmith.github.io/portfolio/"
-  navbar:
-    right:
-      - icon: LinkedIn
-        text: "LinkedIn"
-        href: https://www.linkedin.com/in/danieljames-smith/
-      - text: "GitHub Repo"
-        href: https://github.com/danieljamessmith/blog
-      - about.qmd
+execute:
+  freeze: auto
+  cache: true
 
+website:
+  title: "blog.danieljsmith.org"
+  site-url: "https://blog.danieljsmith.org"
+  navbar:
+    left:
+      - text: "← Main Site"
+        href: https://danieljsmith.org
+    right:
+      - about.qmd
+      - icon: github
+        href: https://github.com/danieljamessmith
 
 format:
   html:
     theme:
-      light: Lux
-      dark : cyborg
+      light: [flatly, custom.scss]
+      dark: [darkly, custom.scss]
     css: styles.css
     grid:
       body-width: 1250px
 
 code-block-bg: true
-code-block-border-left: "#413764"
+code-block-border-left: "#f59e0b"
 highlight-style: atom-one
 
 

@@ -1,1 +1,49 @@
 /*-- scss:defaults --*/
+
+// Amber primary colors
+$primary: #f59e0b;
+$secondary: #d97706;
+$link-color: #b45309;
+
+// Light theme adjustments
+$body-bg: #fffbf5;
+$body-color: #1f2937;
+
+// Navbar
+$navbar-bg: #f59e0b;
+$navbar-fg: #ffffff;
+
+// Links
+$link-hover-color: #d97706;
+
+/*-- scss:rules --*/
+
+// Amber accent for various elements
+.nav-link:hover {
+  color: #d97706 !important;
+}
+
+.navbar-brand {
+  font-weight: 600;
+}
+
+// Category badges
+.quarto-category {
+  background-color: #fef3c7 !important;
+  color: #92400e !important;
+  border: 1px solid #f59e0b !important;
+}
+
+// Post listing hover
+.quarto-post:hover {
+  border-left-color: #f59e0b !important;
+}
+
+// Footer links
+.nav-footer a {
+  color: #b45309;
+}
+
+.nav-footer a:hover {
+  color: #d97706;
+}

@@ -4,14 +4,19 @@ image: profile.jpg
 about:
   template: jolla
   links:
+    - icon: globe
+      text: danieljsmith.org
+      href: https://danieljsmith.org
     - icon: linkedin
       text: LinkedIn
       href: https://www.linkedin.com/in/danieljames-smith/
     - icon: github
-      text: Github
+      text: GitHub
       href: https://github.com/danieljamessmith
 
 ---
 
-This site is made using Quarto and hosted with GitHub pages. Quarto is an open source technical publishing system that provides the functionality to render .ipynb files as blog posts.
+I'm Daniel, a mathematics graduate and tutor based in the UK. This blog documents my explorations in machine learning, data science, and mathematical problem-solving.
+
+This site is part of the [danieljsmith.org](https://danieljsmith.org) family. It's built with [Quarto](https://quarto.org) and hosted on GitHub Pages.
 

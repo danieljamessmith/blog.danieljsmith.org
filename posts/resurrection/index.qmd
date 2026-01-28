@@ -1,0 +1,30 @@
+---
+title: "The Blog Returns"
+author: "Daniel J Smith"
+date: "2026-01-28"
+categories: [Announcement]
+description: "This blog has been resurrected and is now part of the danieljsmith.org site family."
+---
+
+After a hiatus, this blog is back online and has a new home as part of the [danieljsmith.org](https://danieljsmith.org) site family.
+
+## What's New
+
+- **New domain**: The blog now lives at [blog.danieljsmith.org](https://blog.danieljsmith.org)
+- **Fresh design**: An amber/orange theme to distinguish it from the other sites
+- **Part of a family**: Join the [tuition](https://tuition.danieljsmith.org) and [resources](https://resources.danieljsmith.org) sites under the main danieljsmith.org umbrella
+
+## Legacy Posts
+
+All posts from 2023-2024 have been preserved and tagged with the **Legacy** category. These cover:
+
+- **Boltzmann Transport Equation** series (bte) - My undergraduate research on kinetic theory
+- **Emmanuel House** series (eh) - Data analysis projects for a local charity
+- **Neural Networks from Scratch** series (ng) - Building neural networks with NumPy and TensorFlow
+- **Kaggle/ML** competitions (k) - Machine learning competition entries
+- **STEP solutions** (ste) - Worked solutions for A-Level students
+- **YouTube-inspired projects** (yt) - Following along with ML tutorials
+
+## What's Next
+
+More posts coming soon on mathematics, machine learning, and whatever else catches my interest.

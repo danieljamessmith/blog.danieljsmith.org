@@ -12,12 +12,12 @@
 
 - [x] **Phase 1**: Get blog running locally (Quarto 1.8.27 installed, preview working)
 - [x] **Phase 2**: Post curation decision (keeping all posts)
-- [ ] **Phase 3**: Update configuration
-- [ ] **Phase 4**: Amber theme styling
-- [ ] **Phase 5**: Write resurrection post
-- [ ] **Phase 6**: Quick wins agent pass
-- [ ] **Phase 7**: Landing page integration
-- [ ] **Phase 8**: Deployment
+- [x] **Phase 3**: Update configuration
+- [x] **Phase 4**: Amber theme styling
+- [x] **Phase 5**: Write resurrection post
+- [x] **Phase 6**: Quick wins agent pass
+- [x] **Phase 7**: Landing page integration
+- [x] **Phase 8**: Deployment
 
 ---
 

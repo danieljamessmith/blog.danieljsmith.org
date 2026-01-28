@@ -1,3 +1,55 @@
+# Quarto
 /.quarto/
-
 **/*.quarto_ipynb
+# Note: _freeze/ is NOT ignored - it stores cached notebook outputs
+# This allows GitHub Actions to build without re-executing notebooks
+
+# Rendered output (built by GitHub Actions)
+/docs/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.eggs/
+*.egg
+
+# Jupyter
+.ipynb_checkpoints/
+
+# ML artifacts - these are huge and shouldn't be in git
+lightning_logs/
+*.ckpt
+*.h5
+*.pt
+*.pth
+*.safetensors
+*.bin
+wandb/
+mlruns/
+
+# TensorBoard
+events.out.tfevents.*
+
+# Large data files (keep small CSVs, ignore large ones)
+# Uncomment if needed:
+# *.csv
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
