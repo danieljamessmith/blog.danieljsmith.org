@@ -127,3 +127,48 @@ h1, h2, h3, h4, h5, h6 {
 #title-block-header .description {
     margin-top: 0.5rem;
 }
+
+/* === Horizontal scrolling for long content on mobile === */
+@media (max-width: 767px) {
+    /* Math equations */
+    mjx-container[jax="CHTML"][display="true"],
+    .MathJax_Display,
+    .katex-display {
+        overflow-x: auto;
+        overflow-y: hidden;
+        max-width: 100%;
+        padding: 0.25rem 0;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Blockquotes (proofs) */
+    blockquote {
+        overflow-x: auto;
+        max-width: 100%;
+    }
+    
+    /* Images and GIFs in post content - scale to fit */
+    #quarto-content img {
+        max-width: 100%;
+        height: auto;
+    }
+    
+    /* Code cell outputs - scrollable container for plots/GIFs */
+    .cell-output-display {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        max-width: 100%;
+    }
+    
+    /* Folium/Leaflet maps - taller on mobile for usability */
+    .cell-output-display iframe[srcdoc] {
+        min-height: 450px !important;
+    }
+}
+
+/* Reusable scroll wrapper for any content */
+.scroll-x {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    max-width: 100%;
+}
