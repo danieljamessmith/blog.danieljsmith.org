@@ -172,3 +172,29 @@ h1, h2, h3, h4, h5, h6 {
     -webkit-overflow-scrolling: touch;
     max-width: 100%;
 }
+
+/* Mobile hamburger menu - social icons side by side (GitHub left, LinkedIn right) */
+@media (max-width: 991.98px) {
+    /* Allow navbar-nav to wrap so compact items can sit on same row */
+    .navbar-collapse .navbar-nav {
+        flex-wrap: wrap !important;
+        flex-direction: row !important;
+    }
+    
+    /* Regular nav items (with text) take full width */
+    .navbar-collapse .navbar-nav .nav-item:not(.compact) {
+        flex: 0 0 100%;
+        width: 100%;
+    }
+    
+    /* Compact nav items (icon-only: GitHub, LinkedIn) stay inline */
+    .navbar-collapse .navbar-nav .nav-item.compact {
+        flex: 0 0 auto;
+        width: auto;
+    }
+    
+    /* Reduce padding on icon links in mobile menu */
+    .navbar-collapse .navbar-nav .nav-item.compact .nav-link {
+        padding: 0.5rem 0.75rem;
+    }
+}

@@ -9,6 +9,7 @@ execute:
 website:
   title: "blog.danieljsmith.org"
   site-url: "https://blog.danieljsmith.org"
+  favicon: favicon.png
   navbar:
     right:
       - text: "← Main Site"

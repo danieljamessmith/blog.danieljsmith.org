@@ -1,5 +1,6 @@
 ---
 title: "Blog"
+pagetitle: "blog.danieljsmith.org"
 listing:
   contents: posts
   sort: "date desc"
