@@ -13,10 +13,10 @@ website:
     right:
       - text: "← Main Site"
         href: https://danieljsmith.org
-      - icon: linkedin
-        href: https://www.linkedin.com/in/danieljames-smith/
       - icon: github
         href: https://github.com/danieljamessmith
+      - icon: linkedin
+        href: https://www.linkedin.com/in/danieljames-smith/
 
 format:
   html:
