@@ -9,6 +9,8 @@ image: 'favicon_resized.png'
 
 After a period of inactivity, this blog is back online with a new home at [blog.danieljsmith.org](https://blog.danieljsmith.org).
 
-It now sits alongside the [tuition.danieljsmith.org](https://tuition.danieljsmith.org) and [resources.danieljsmith.org](https://resources.danieljsmith.org) sites
+It now sits alongside the [tuition.danieljsmith.org](https://tuition.danieljsmith.org) and [resources.danieljsmith.org](https://resources.danieljsmith.org) sites.
 
-Built with [Quarto](https://quarto.org/) and [Jupyter Notebooks](https://jupyter.org/), hosted on [GitHub Pages](https://pages.github.com/), with an assist from [Claude](https://claude.ai/).
+Built with [Quarto](https://quarto.org/) and [Jupyter Notebooks](https://jupyter.org/), hosted on [GitHub Pages](https://pages.github.com/).
+
+[Claude Opus 4.5](https://www.anthropic.com/news/claude-opus-4-5) in [Cursor](https://cursor.com/) provided major assistance with the restyling and redeployment of the blog on the new subdomain.
