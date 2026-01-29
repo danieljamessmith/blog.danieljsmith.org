@@ -13,6 +13,8 @@ website:
     right:
       - text: "← Main Site"
         href: https://danieljsmith.org
+      - text: "Tuition Enquiries"
+        href: https://tuition.danieljsmith.org/contact
       - icon: github
         href: https://github.com/danieljamessmith
       - icon: linkedin
@@ -22,8 +24,6 @@ format:
   html:
     theme: [flatly, custom.scss]
     css: styles.css
-    grid:
-      body-width: 1250px
 
 code-block-bg: true
 code-block-border-left: "#f59e0b"

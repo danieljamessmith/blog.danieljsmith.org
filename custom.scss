@@ -42,6 +42,23 @@ body.quarto-listing-page .navbar {
   color: rgba(255, 255, 255, 0.85) !important;
 }
 
+// Tuition Enquiries button - premium subtle style
+.navbar-nav .nav-link[href*="tuition"] {
+  background: rgba(255, 255, 255, 0.15) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  border-radius: 6px !important;
+  padding: 0.4rem 1rem !important;
+  font-weight: 500 !important;
+  backdrop-filter: blur(4px);
+  transition: all 0.2s ease !important;
+}
+
+.navbar-nav .nav-link[href*="tuition"]:hover {
+  background: rgba(255, 255, 255, 0.25) !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
+  transform: translateY(-1px);
+}
+
 // Navbar brand (title) - prevent black on hover
 .navbar-brand {
   font-weight: 600;

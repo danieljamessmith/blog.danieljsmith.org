@@ -1,5 +1,14 @@
 /* css styles */
 
+/* Mobile-first responsive layout */
+html {
+    overflow-x: hidden;
+}
+
+body {
+    overflow-x: hidden;
+    max-width: 100vw;
+}
 
 h1, h2, h3, h4, h5, h6 {
     text-transform: none;
@@ -9,10 +18,26 @@ h1, h2, h3, h4, h5, h6 {
     text-transform: none;
 }
 
-/* Add horizontal margins to the feed listing - responsive */
+/* Ensure content doesn't overflow on mobile */
+.quarto-container {
+    max-width: 100% !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+/* Responsive content padding */
 #quarto-content {
     padding-left: 1rem;
     padding-right: 1rem;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+@media (min-width: 576px) {
+    #quarto-content {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
 }
 
 @media (min-width: 768px) {
@@ -24,9 +49,36 @@ h1, h2, h3, h4, h5, h6 {
 
 @media (min-width: 1024px) {
     #quarto-content {
+        padding-left: 5rem;
+        padding-right: 4rem;
+    }
+}
+
+@media (min-width: 1280px) {
+    #quarto-content {
         padding-left: 7.5rem;
         padding-right: 5rem;
+        max-width: 1400px;
+        margin-left: auto;
+        margin-right: auto;
     }
+}
+
+/* Fix listing grid on mobile */
+.quarto-listing {
+    max-width: 100%;
+}
+
+.quarto-post {
+    max-width: 100%;
+    overflow: hidden;
+}
+
+/* Responsive images */
+.quarto-post img,
+.thumbnail img {
+    max-width: 100%;
+    height: auto;
 }
 
 /* Add spacing between post title and categories in feed */
