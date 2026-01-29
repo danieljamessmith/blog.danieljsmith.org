@@ -41,3 +41,23 @@ h1, h2, h3, h4, h5, h6 {
 .quarto-post .listing-date {
     font-size: 0.75rem;
 }
+
+/* Add padding under preview images to ensure whitespace before dividers */
+.quarto-post .thumbnail img,
+.quarto-post .listing-item-img-placeholder {
+    margin-bottom: 0.75rem;
+}
+
+/* Ensure consistent spacing at bottom of each post card */
+.quarto-post {
+    padding-bottom: 0.5rem;
+}
+
+/* Add spacing between post title and description on blog post pages */
+#title-block-header .title {
+    margin-bottom: 0.75rem;
+}
+
+#title-block-header .description {
+    margin-top: 0.5rem;
+}

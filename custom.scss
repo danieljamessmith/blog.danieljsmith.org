@@ -23,18 +23,33 @@ html {
   font-size: 14px; // Default is 16px, this gives ~87.5% scale
 }
 
-// Gradient navbar matching tuition site style
+// Gradient navbar with richer, more premium feel
+// Uses deeper amber tones and subtle shine effect
 .navbar {
-  background: linear-gradient(to right, #d97706, #f59e0b, #fbbf24) !important;
+  background: linear-gradient(135deg, #b45309 0%, #d97706 35%, #f59e0b 65%, #d97706 100%) !important;
+  box-shadow: 0 2px 8px rgba(180, 83, 9, 0.25);
 }
 
-// Navbar link hover
+// Sticky navbar only on the feed/listing pages, not on individual posts
+body.quarto-listing-page .navbar {
+  position: sticky !important;
+  top: 0;
+  z-index: 1030;
+}
+
+// Navbar link hover - keep white, don't turn black
 .nav-link:hover {
-  color: rgba(255, 255, 255, 0.8) !important;
+  color: rgba(255, 255, 255, 0.85) !important;
 }
 
+// Navbar brand (title) - prevent black on hover
 .navbar-brand {
   font-weight: 600;
+  color: #ffffff !important;
+}
+
+.navbar-brand:hover {
+  color: rgba(255, 255, 255, 0.9) !important;
 }
 
 // Category badges - orange everywhere
